@@ -25,6 +25,7 @@ exports.findById = function(req, res) {
     console.log('Retrieving user: ' + id);
     db.collection('users', function(err, collection) {
         collection.findOne({'_id':new BSON.ObjectID(id)}, function(err, item) {
+            res.header("Access-Control-Allow-Origin", "*");
             res.send(item);
         });
     });
@@ -49,9 +50,11 @@ exports.addUser = function(req, res) {
     db.collection('users', function(err, collection) {
         collection.insert(user, {safe:true}, function(err, result) {
             if (err) {
+                res.header("Access-Control-Allow-Origin", "*");
                 res.send({'error':'An error has occurred'});
             } else {
                 console.log('Success: ' + JSON.stringify(result[0]));
+                res.header("Access-Control-Allow-Origin", "*");
                 res.send(result[0]);
             }
         });

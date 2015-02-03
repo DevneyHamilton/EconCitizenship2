@@ -3,7 +3,13 @@
         defaults: {
             name: "unknown",
             county: "Santa Clara"
-        }
+        },
+        //urlRoot: "http://127.0.0.1:3333/users/"
+        url : function() {
+            // Important! It's got to know where to send its REST calls.
+            // In this case, POST to '/donuts' and PUT to '/donuts/:id'
+            return this.id ? 'http://127.0.0.1:3333/users/' + this.id : 'http://127.0.0.1:3333/users';
+        } 
     });
 
     var Users = Backbone.Collection.extend({
@@ -25,10 +31,11 @@
     var UserListView = Backbone.View.extend({
         el: $('body'),
         events: {
-            'click button#add': 'addUser'
+            'click button#add': 'addUser',
+            'click button#save_test': 'saveTest'
         },
         initialize:function(){
-            _.bindAll(this, 'render', 'addUser', 'appendUser');
+            _.bindAll(this, 'render', 'addUser', 'appendUser', 'saveTest'); //this is the UserListView for all of these functions
             this.collection = new Users();
             this.collection.bind('add', this.appendUser);
             console.log("try fetching in view init");
@@ -39,26 +46,26 @@
         
         render:function(){
             $(this.el).append("<button id='add'>Add  user</button>");
-            $(this.el).append("<button id='load_all'>Get all</button>");
-            $(this.el).append("<ul></ul>");
+            $(this.el).append("<button id='save_test'>Test Save</button>");
+            $(this.el).append("<ul id=user_list></ul>");
             _(this.collection.models).each(function(user){
                 self.appendUser(user);
             }, this);
         },
-        // saveTest: function(){
-        //     var test_user = new User({"name": "F", "county" : "Alameda"});
-        //     console.log("try save");
-        //     test_user.save({
-        //         success: function(){
-        //             console.log("saved!!!")
-        //         },
-        //         error: function(){
-        //             console.log("failed to save :((((")
-        //         }
-        //     });
+        saveTest: function(){
+            var test_user = new User({"name": "F", "county" : "Alameda"});
+            console.log("try save");
+            test_user.save({
+                success: function(){
+                    console.log("saved!!!")
+                },
+                error: function(){
+                    console.log("failed to save :((((")
+                }
+            });
 
 
-        // },
+        },
         addUser: function(){
             this.counter++;
             var user = new User();
@@ -69,7 +76,7 @@
         },
 
         appendUser: function(user){
-            $('ul', this.el).append("<li>"+user.get('name') + " " + user.get('county') + "</li>")
+            $('#user_list', this.el).append("<li>"+user.get('name') + " " + user.get('county') + "</li>")
         }
     });
 
