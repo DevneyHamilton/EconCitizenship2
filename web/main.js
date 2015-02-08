@@ -25,7 +25,13 @@
 
     });
 
+    //template for user info
+    var user_info_template = _.template("
+        
+        
 
+
+        ");
   
 
     var UserListView = Backbone.View.extend({
@@ -53,11 +59,15 @@
             }, this);
         },
         saveTest: function(){
-            var test_user = new User({"name": "F", "county" : "Alameda"});
+            var name = $("#input-name").val();
+            var county = $("#input-county").val();
+            var user_info = {"name": name, "county" : county};
+            console.log(user_info)
+            var test_user = new User(user_info);
             console.log("try save");
             test_user.save({
                 success: function(){
-                    console.log("saved!!!")
+                    console.log("saved!!!") //this isn't happening but server says 'success'
                 },
                 error: function(){
                     console.log("failed to save :((((")
