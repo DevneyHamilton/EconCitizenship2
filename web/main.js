@@ -30,10 +30,45 @@
         //model: User,
         el: $('#user-container'), 
         //add event for saving info
+        events:{
+            'click button#giving_save_button' : 'saveGivingInfo',
+            'click button#identity_save_button' : 'saveIdentityInfo',
+            'click button#banking_save_button' : 'saveBankingInfo',
+        },
         initialize:function(){
             //alert("init user view");
             _.bindAll(this, 'render');
             this.render();
+        },
+        saveIdentityInfo: function(e){
+            e.preventDefault();
+            this.model.set({"name": $('#input-name').val(), "county": $('#input-county').val()})
+            this.model.save({
+                success: function(model,response){
+                    console.log("saved giving info for user " + this.model.get("name"));
+                }
+            });
+                
+        },
+        saveBankingInfo: function(e){
+            e.preventDefault();
+            this.model.set({"bank": $('#input-bank').val(), "credit_score": $('#input-credit-score').val()})
+            this.model.save({
+                success: function(model,response){
+                    console.log("saved giving info for user " + this.model.get("name"));
+                }
+            });
+                
+        },
+        saveGivingInfo: function(e){
+            e.preventDefault();
+            this.model.set({"donations": $('#input-donations').val(), "volunteer_hours": $('#input-volunteer').val()})
+            this.model.save({
+                success: function(model,response){
+                    console.log("saved giving info for user " + this.model.get("name"));
+                }
+            });
+                
         },
         render:function(){
             //alert("rendering user view")
@@ -60,8 +95,8 @@
                     <ul class="nav nav-tabs" role="tablist">\
       <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>\
       <li role="presentation"><a href="#giving" aria-controls="My Giving" role="tab" data-toggle="tab">My Giving</a></li>\
+       <li role="presentation"><a href="#banking" aria-controls="My Banking" role="tab" data-toggle="tab">My Banking</a></li>\
       <li role="presentation"><a href="#spending" aria-controls="My Spending" role="tab" data-toggle="tab">My Spending</a></li>\
-      <li role="presentation"><a href="#banking" aria-controls="My Banking" role="tab" data-toggle="tab">My Banking</a></li>\
     </ul>\
     <!-- Tab panes -->\
     <div class="tab-content">\
@@ -77,37 +112,54 @@
                 </div>\
                 <div class="input-group">\
                    <span class="input-group-addon">I live in </span>\
-                   <input type="text" class="form-control" placeholder="" id="input-county" value="">\
+                   <input type="text" class="form-control" placeholder="" id="input-county" value="<%= template_county%>">\
                    <span class="input-group-addon"> County.</span>\
                 </div> \
-                <button type="submit" class="btn btn-default" id="user-info">Submit</button>\
+                <button class="btn btn-default" id="identity_save_button">Save Identity Information</button>\
               </form>\
             </div>\
           </div>\
         </div>\
-      <div role="tabpanel" class="tab-pane" id="giving">\
+    <div role="tabpanel" class="tab-pane" id="giving">\
         <div class="container">\
-          <h1>Tell Us About Your Giving . . . </h1>\
+            <h1>Tell Us About Your Giving . . . </h1>\
             <div style="padding: 100px 100px 10px;">\
               <form class="user-input-form" role="form">\
                 <div class="input-group">\
                    <span class="input-group-addon">I gave $</span>\
-                   <input type="text" class="form-control" placeholder="" id="input-donations">\
+                   <input type="text" class="form-control" placeholder="" id="input-donations" value="<%= template_donations%>">\
                    <span class="input-group-addon">.00 to charity</span> \
                 </div>\
                 <div class="input-group">\
                    <span class="input-group-addon">I volunteered </span>\
-                   <input type="text" class="form-control" placeholder="" id="input-volunteer" value="">\
+                   <input type="text" class="form-control" placeholder="" id="input-volunteer" value="<%= template_volunteer_hours%>">\
                    <span class="input-group-addon"> hours in my community.</span>\
                 </div>\
-                <button type="submit" class="btn btn-default">Submit</button>\
+                <button class="btn btn-default" id="giving_save_button">Save Giving Information</button>\
               </form>\
             </div>\
+        </div>\
+    </div>\
+    <div role="tabpanel" class="tab-pane" id="banking">\
+        <div class="container">\
+          <h1>Tell Us About Your Banking . . . </h1>\
+          <div style="padding: 100px 100px 10px;">\
+            <form class="user-input-form" role="form">\
+              <div class="input-group">\
+                <span class="input-group-addon">I use </span>\
+                <input type="text" class="form-control" placeholder="" id="input-bank" value="<%= template_bank%>">\
+                <span class="input-group-addon"> for banking</span> \
+              </div>\
+              <div class="input-group">\
+                <span class="input-group-addon">My credit score is </span>\
+                <input type="text" class="form-control" placeholder="" id="input-credit-score" value="<%= template_credit_score%>">\
+              </div>\
+              <button class="btn btn-default" id="banking_save_button">Save Banking Information</button>\
+            </form>\
           </div>\
         </div>\
-       </div>\
+    </div>\
     <div role="tabpanel" class="tab-panel" id="spending"></div>\
-      <div role="tabpanel" class="tab-panel" id="banking"></div>\
  </div>')
             html_string = tpl(user_info);
             $(this.el).append(html_string);
@@ -115,10 +167,10 @@
 
     });
     
-    var user = new User({id: "54d6ee9d83ba2d2633607458"})
+    var user = new User({id: "54da7c44377763a41cdf6643"})
     user.fetch({
         success : function(model, response){
-            alert(JSON.stringify(model.get("name")));
+            //alert(JSON.stringify("fetched user with id: " + model.get("name")));
             var user_view = new UserView({model: model});
 
         }
