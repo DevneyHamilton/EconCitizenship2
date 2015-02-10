@@ -82,6 +82,14 @@ exports.updateUser = function(req, res) {
     });
 }
 
+exports.getScore = function(req,res){
+    console.log("getting score")
+    var id = req.params.id;
+    var user = req.body;
+    console.log('for user: ' + id);
+    res.send("33")
+
+}
 exports.deleteUser = function(req, res) {
     var id = req.params.id;
     console.log('Deleting user: ' + id);

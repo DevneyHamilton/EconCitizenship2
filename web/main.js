@@ -34,11 +34,25 @@
             'click button#giving_save_button' : 'saveGivingInfo',
             'click button#identity_save_button' : 'saveIdentityInfo',
             'click button#banking_save_button' : 'saveBankingInfo',
+            'click button#score_button' : 'getScore'
         },
         initialize:function(){
             //alert("init user view");
             _.bindAll(this, 'render');
             this.render();
+        },
+        getScore: function(e){
+            e.preventDefault();
+            score_url_base = "http://localhost:3333/getScore/";
+            score_url = score_url_base + this.model.id;
+            $.ajax(score_url, {
+                type: "POST",
+                success: function(response){
+                    alert(response)
+
+                }
+
+            });
         },
         saveIdentityInfo: function(e){
             e.preventDefault();
@@ -118,6 +132,7 @@
                 <button class="btn btn-default" id="identity_save_button">Save Identity Information</button>\
               </form>\
             </div>\
+            <button class="btn btn-default" id="score_button">Get Score</button>\
           </div>\
         </div>\
     <div role="tabpanel" class="tab-pane" id="giving">\
