@@ -99,30 +99,40 @@ var populateDB = function() {
 
     var users = [
     {
-        name: "A",
-        county: "Santa Clara",
-        giving_data: {
-            donations: 20, 
-            volunteer_hours: 10
-        },
-        banking_data:{
+            name: "A",
+            county: "Santa Clara",
+            spending:[],
+            bank: "One United Bank",
             credit_score: 600,
-            bank: "One United Bank"
-        },
-        spending_data:{}
+            donations:20,
+            volunteer_hours: 10 
     },
     {
         name: "B",
         county: "San Mateo",
-        giving_data: {
-            donations: 50, 
-            volunteer_hours:2
-        },
-        banking_data:{
-            credit_score: 400,
-            bank: "none"
-        },
-        spending_data:{}
+        spending:[],
+        bank: "Chase",
+        credit_score: 420,
+        donations:10,
+        volunteer_hours: 23
+    },
+    {
+        name: "C",
+        county: "San Mateo",
+        spending:[],
+        bank: "Self Help Credit Union",
+        credit_score: 530,
+        donations:100,
+        volunteer_hours: 5
+    },
+    {
+        name: "D",
+        county: "Alameda",
+        spending:[],
+        bank: "Beneficial Bank",
+        credit_score: 570,
+        donations: 40,
+        volunteer_hours: 8
     }];
 
     db.collection('users', function(err, collection) {
