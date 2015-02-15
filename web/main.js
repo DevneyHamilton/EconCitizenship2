@@ -182,7 +182,7 @@
 
     });
     
-    var user = new User({id: "54da7c44377763a41cdf6643"})
+    var user = new User({id: "54e11cd0d171eca216be286b"})
     user.fetch({
         success : function(model, response){
             //alert(JSON.stringify("fetched user with id: " + model.get("name")));

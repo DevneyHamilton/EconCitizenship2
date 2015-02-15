@@ -27,11 +27,12 @@ app.configure(function () {
 app.get('/users', user.findAll);
 app.get('/users/:id', user.findById);
 app.post('/users', user.addUser);
-app.post('/getScore/:id', function(req, resp){
+/*app.post('/getScore/:id', function(req, resp){
   console.log("getting score");
   resp.send("33");
 
-});
+});*/
+app.post('/getScore/:id', user.getScore);
 app.put('/users/:id', user.updateUser);
 app.delete('/users/:id',user.deleteUser);
 

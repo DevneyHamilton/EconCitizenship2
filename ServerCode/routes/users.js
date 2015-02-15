@@ -5,6 +5,7 @@ var Server = mongo.Server, Db = mongo.Db, BSON = mongo.BSONPure;
 var server = new Server('localhost', 27017, {auto_reconnect:true});
 db = new Db('EconCitDbV2', server);
 
+
 db.open(function(err, db) {
     if(!err) {
         console.log("Connected to 'EconCitDb' database");
@@ -14,8 +15,15 @@ db.open(function(err, db) {
                 populateDB();
             }
         });
+        db.collection('vendors', {strict:true}, function(err, collection) {
+            if (err) {
+                console.log("The 'vendors' collection doesn't exist. Creating it with sample data...");
+                populateDbWithVendorCollection();
+            }
+        });
     }
 });
+
 
 
 
@@ -84,12 +92,29 @@ exports.updateUser = function(req, res) {
 
 exports.getScore = function(req,res){
     console.log("getting score")
-    var id = req.params.id;
-    var user = req.body;
-    console.log('for user: ' + id);
-    res.send("33")
-
+    db.collection('vendors', function(err, vendorCollection) {
+        vendorCollection.find().toArray(function(err, vendors) {
+            console.log(JSON.stringify(vendors));
+            res.header("Access-Control-Allow-Origin", "*");
+            db.collection('users', function(err, userCollection){
+                //will need to replace with findAndModify
+                var id = req.params.id;
+                userCollection.findOne({'_id':new BSON.ObjectID(id)}, function(err, user) {
+                    user_name = user["name"];
+                    user_transactions = JSON.stringify(user["transactions"]);
+                    score = calculateUserScore(user["transactions"], vendors[0])
+                    res_str = user_name + " has the following score: " + score;
+                    
+                    console.log(res_str);
+                    res.header("Access-Control-Allow-Origin", "*");
+                    res.send(res_str);
+                });
+            });
+        });
+    });
+    
 }
+
 exports.deleteUser = function(req, res) {
     var id = req.params.id;
     console.log('Deleting user: ' + id);
@@ -105,6 +130,52 @@ exports.deleteUser = function(req, res) {
     });
 } 
 
+/*takes in a user transactions object, and a vendor info object, and outputs a score*/
+var calculateUserScore = function(user_transactions, vendor_info){
+    //dummy
+    transaction_score = 0;
+    for(var i = 0; i < user_transactions.length; i++){
+        transaction = user_transactions[i]
+        vendor_rating = vendor_info[transaction["vendor"]]
+        //if 'good'
+        //replace with a map from rating to multipler or score function!
+        if(vendor_rating == 1){
+            transaction_score += transaction["amount"] * .2
+        }else if(vendor_rating == 2){
+            transaction_score += transaction["amount"] * .05
+        }
+        
+
+    }
+    return transaction_score
+
+}
+
+/*should be refactored so only one method for both users and vendors collections!
+
+be able to look up a rating based on the name of a vendor, and 
+get all vendors as a list as the keys of this map. Start with two 
+ratings: 1 is 'good' and 2 is 'bad.' This can later be expanded
+to have more attributes per vendor (e.g. category, local vs franchise) 
+by mapping from name to an object or from name to an array of properties identifiable by index*/
+var populateDbWithVendorCollection = function(){
+    var vendors = {
+        "McKameys" : 1, 
+        "Vocal & Local" : 1,
+        "Mercadito": 1,
+        "LexCorp" : 2,
+        "Buy n Large" : 2,
+        "Veidt Industries" : 2
+    }
+    db.collection('vendors', function(err, collection) {
+        collection.insert(vendors, {safe:true}, function(err, result) {});
+    });
+
+
+}
+
+
+
 
 var populateDB = function() {
 
@@ -112,7 +183,19 @@ var populateDB = function() {
     {
             name: "A",
             county: "Santa Clara",
-            spending:[],
+            transactions:[
+                { vendor: "McKameys",
+                    amount: 11
+
+                },
+                { vendor: "LexCorp",
+                    amount:20
+
+                },
+                { vendor: "Vocal & Local",
+                  amount: 13 
+                }   
+            ],
             bank: "One United Bank",
             credit_score: 600,
             donations:20,
@@ -121,7 +204,19 @@ var populateDB = function() {
     {
         name: "B",
         county: "San Mateo",
-        spending:[],
+        transactions:[
+                { vendor: "Mercadito",
+                    amount: 31
+
+                },
+                { vendor: "Veidt Industries",
+                    amount:18
+
+                },
+                { vendor: "Vocal & Local",
+                  amount: 6
+                }   
+            ],
         bank: "Chase",
         credit_score: 420,
         donations:10,
@@ -130,7 +225,12 @@ var populateDB = function() {
     {
         name: "C",
         county: "San Mateo",
-        spending:[],
+        transactions:[
+                { vendor: "McKameys",
+                    amount: 20
+
+                }   
+            ],
         bank: "Self Help Credit Union",
         credit_score: 530,
         donations:100,
@@ -139,7 +239,19 @@ var populateDB = function() {
     {
         name: "D",
         county: "Alameda",
-        spending:[],
+        transactions:[
+                { vendor: "Buy n Large",
+                    amount: 23
+
+                },
+                { vendor: "LexCorp",
+                    amount:15
+
+                },
+                { vendor: "McKameys",
+                  amount: 7 
+                }   
+            ],
         bank: "Beneficial Bank",
         credit_score: 570,
         donations: 40,
