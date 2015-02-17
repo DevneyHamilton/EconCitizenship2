@@ -1,4 +1,50 @@
-(function($){   
+(function($){ 
+    var Transaction = Backbone.Model.extend({
+      defaults: {
+        vendor: "unknown",
+        amount: 0
+      }//,
+      // initialize: function(){
+      //   console.log("init Transaction model")
+      // }
+    });
+
+    var TransactionListItemView = Backbone.View.extend({
+      template: _.template('<li class="list-group-item"><%=vendor%> ---  $<%=amount%></li>'),
+
+      render:function (eventName) {
+          html_string = this.template(this.model.toJSON());
+          return html_string;
+      }
+
+    });
+
+    var TransactionListView = Backbone.View.extend({
+      //el: $('#transactions_container'),
+      initialize: function(){
+        console.log("init TransactionListView");
+        this.render();
+      },
+      render: function(){
+        console.log("rendering transacitons list view")
+        //$('#transactions_container').html("transaction view: " + JSON.stringify(this.model))
+        $('#transactions_container').html('<ul id="transaction_list" class="list-group"></ul>')
+        _.each(this.model.models, function (transaction) {
+            $("#transaction_list").append(new TransactionListItemView({model:transaction}).render());
+        }, this);
+      }
+
+
+    });
+
+    var TransactionCollection = Backbone.Collection.extend({
+      model: Transaction,
+      initialize: function(){
+        console.log("transaction collection inited");
+      }
+    });
+
+
     var User = Backbone.Model.extend({
         defaults: {
             name: "unknown",
@@ -22,7 +68,7 @@
 
         },
         value_change: function(){
-            alert("users fetched");
+            console.log("users fetched");
         }
     });
 
@@ -37,9 +83,14 @@
             'click button#score_button' : 'getScore'
         },
         initialize:function(){
-            //alert("init user view");
+            //console.log("init user view");
             _.bindAll(this, 'render');
-            this.render();
+            //this.render();
+              this.render = _.wrap(this.render, function(render) {
+                  render();
+                  this.afterRender();
+              });
+              this.render(); 
         },
         getScore: function(e){
             e.preventDefault();
@@ -48,7 +99,7 @@
             $.ajax(score_url, {
                 type: "POST",
                 success: function(response){
-                    alert(response)
+                    console.log(response)
 
                 }
 
@@ -84,8 +135,14 @@
             });
                 
         },
+        afterRender: function(){
+          console.log("done rendering user view")
+          console.log("testing transactions availability in user view after render: " + JSON.stringify(this.model.get("transactions")))
+          var user_transactions = new TransactionCollection(this.model.get("transactions"));
+          var transactions_view = new TransactionListView({model: user_transactions});
+        },
         render:function(){
-            //alert("rendering user view")
+            //console.log("rendering user view")
             //var tpl = _.template("single user view as template for " +  this.model.id);
             var user_info = {template_id : this.model.id, 
                             template_name: this.model.get("name"),
@@ -95,7 +152,7 @@
                             template_donations: this.model.get("donations"),
                             template_volunteer_hours: this.model.get("volunteer_hours")
                         }
-            alert(JSON.stringify(user_info));              
+            console.log(JSON.stringify(user_info));              
             var test_tpl = _.template('<p> This user has id <%= template_id%>! \
                   This user has name <%= template_name%>!\
                   This user has bank <%= template_bank%>!\
@@ -174,7 +231,12 @@
           </div>\
         </div>\
     </div>\
-    <div role="tabpanel" class="tab-panel" id="spending"></div>\
+    <div role="tabpanel" class="tab-panel" id="spending">\
+    <div class="container">\
+    <div id="transactions_container"></div>\
+    </div>\
+    </div>\
+  </div>\
  </div>')
             html_string = tpl(user_info);
             $(this.el).append(html_string);
@@ -185,8 +247,10 @@
     var user = new User({id: "54e11cd0d171eca216be286b"})
     user.fetch({
         success : function(model, response){
-            //alert(JSON.stringify("fetched user with id: " + model.get("name")));
+            //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
             var user_view = new UserView({model: model});
+            console.log("testing transactions availability: " + JSON.stringify(model.get("transactions")));
+
 
         }
     });
