@@ -32,6 +32,20 @@
         _.each(this.model.models, function (transaction) {
             $("#transaction_list").append(new TransactionListItemView({model:transaction}).render());
         }, this);
+        var form_template = _.template('<div style="padding: 100px 100px 10px;">\
+            <form class="transaction-input-form" role="form">\
+              <div class="input-group">\
+                <span class="input-group-addon">Vendor: </span>\
+                <input type="text" class="form-control" placeholder="" id="input-transaction-vendor" value="">\
+              </div>\
+              <div class="input-group">\
+                <span class="input-group-addon">Amount: $ </span>\
+                <input type="text" class="form-control" placeholder="" id="input-transaction-amount" value="">\
+              </div>\
+              <button class="btn btn-default" id="transaction_save_button">Save New Transaction</button>\
+            </form>\
+          </div>');
+        $("#transactions_container").append(form_template);
       }
 
 
@@ -42,6 +56,26 @@
       initialize: function(){
         console.log("transaction collection inited");
       }
+    });
+
+    var TransactionFormView = Backbone.View.extend({
+      template: _.template('<div style="padding: 100px 100px 10px;">\
+            <form class="transaction-input-form" role="form">\
+              <div class="input-group">\
+                <span class="input-group-addon">Vendor: </span>\
+                <input type="text" class="form-control" placeholder="" id="input-transaction-vendor" value="">\
+              </div>\
+              <div class="input-group">\
+                <span class="input-group-addon">Amount: $ </span>\
+                <input type="text" class="form-control" placeholder="" id="input-transaction-amount" value="">\
+              </div>\
+              <button class="btn btn-default" id="transaction_save_button">Save New Transaction</button>\
+            </form>\
+          </div>'),
+      render: function(){
+        $("#transactions_container").append(this.template());
+      }
+
     });
 
 
@@ -80,7 +114,8 @@
             'click button#giving_save_button' : 'saveGivingInfo',
             'click button#identity_save_button' : 'saveIdentityInfo',
             'click button#banking_save_button' : 'saveBankingInfo',
-            'click button#score_button' : 'getScore'
+            'click button#score_button' : 'getScore',
+            'click button#transaction_save_button': 'saveTransaction'
         },
         initialize:function(){
             //console.log("init user view");
@@ -115,6 +150,22 @@
             });
                 
         },
+        saveTransaction: function(e){
+          e.preventDefault();
+          old_transactions = this.model.get("transactions")
+          new_transaction = {
+            "vendor": $("#input-transaction-vendor").val(),
+            "amount": $("#input-transaction-amount").val()
+          };
+          old_transactions.push(new_transaction);
+          this.model.set({"transactions" : old_transactions});
+          this.model.save({
+            success: function(model,response){
+              console.log("saved transaction for user " + this.model.get("name"));
+            }
+          });
+
+        },
         saveBankingInfo: function(e){
             e.preventDefault();
             this.model.set({"bank": $('#input-bank').val(), "credit_score": $('#input-credit-score').val()})
@@ -140,6 +191,7 @@
           console.log("testing transactions availability in user view after render: " + JSON.stringify(this.model.get("transactions")))
           var user_transactions = new TransactionCollection(this.model.get("transactions"));
           var transactions_view = new TransactionListView({model: user_transactions});
+          //var transactions_form_view = new TransactionFormView();
         },
         render:function(){
             //console.log("rendering user view")
