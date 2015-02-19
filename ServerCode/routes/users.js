@@ -105,7 +105,7 @@ exports.getScore = function(req,res){
                     user_name = user["name"];
                     user_transactions = JSON.stringify(user["transactions"]);
                     score = calculateUserScore(user, vendors[0])
-                    res_str = user_name + " has the following score: " + score;
+                    res_str = "" + score; //make sure it's a string
                     
                     console.log(res_str);
                     res.header("Access-Control-Allow-Origin", "*");
@@ -243,7 +243,8 @@ var populateDB = function() {
             bank: "One United Bank",
             credit_score: 600,
             donations:20,
-            volunteer_hours: 10 
+            volunteer_hours: 10,
+            score: "unknown"
     },
     {
         name: "B",
@@ -264,7 +265,8 @@ var populateDB = function() {
         bank: "Chase",
         credit_score: 420,
         donations:10,
-        volunteer_hours: 23
+        volunteer_hours: 23,
+        score: "unknown"
     },
     {
         name: "C",
@@ -278,7 +280,8 @@ var populateDB = function() {
         bank: "Self Help Credit Union",
         credit_score: 530,
         donations:100,
-        volunteer_hours: 5
+        volunteer_hours: 5,
+        score: "unknown"
     },
     {
         name: "D",
@@ -299,7 +302,8 @@ var populateDB = function() {
         bank: "Beneficial Bank",
         credit_score: 570,
         donations: 40,
-        volunteer_hours: 8
+        volunteer_hours: 8,
+        score: "unknown"
     }];
 
     db.collection('users', function(err, collection) {

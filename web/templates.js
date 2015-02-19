@@ -26,7 +26,10 @@ var template_test = {
                 	<button class="btn btn-default" id="identity_save_button">Save Identity Information</button>\
              </form>\
             </div>\
-            <button class="btn btn-default" id="score_button">Update Score</button>\
+            <div id="score_container">\
+            	<h4> Your score is currently <%=template_score%>.</h4>\
+            	<button class="btn btn-default" id="score_button">Update Score</button>\
+            </div>\
           </div>\
         </div>\
     <div role="tabpanel" class="tab-pane" id="giving">\

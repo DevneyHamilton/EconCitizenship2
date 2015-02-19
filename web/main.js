@@ -105,6 +105,7 @@
             $.ajax(score_url, {
                 type: "POST",
                 success: function(response){
+                    $("#score_container h4").html("Your score is " + response + ".")
                     console.log(response)
 
                 }
@@ -173,7 +174,8 @@
                             template_county: this.model.get("county"),
                             template_credit_score: this.model.get("credit_score"),
                             template_donations: this.model.get("donations"),
-                            template_volunteer_hours: this.model.get("volunteer_hours")
+                            template_volunteer_hours: this.model.get("volunteer_hours"),
+                            template_score: this.model.get("score")
                         }
             //console.log(JSON.stringify(user_info));             
             
@@ -188,7 +190,7 @@
 
 $.getScript("templates.js", function(){
     var myTemplates = template_test;
-    var user = new User({id: "54e645ff4e93126e1ae3bbe7"})
+    var user = new User({id: "54e64d52a8cd69ee1bfc25db"})
     user.fetch({
         success : function(model, response){
             //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
