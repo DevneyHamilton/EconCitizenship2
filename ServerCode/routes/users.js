@@ -140,8 +140,8 @@ var calculateUserScore = function(user_info, vendor_info){
     donations_subscore =calculateUserDonationsSubscore(user_info["donations"])
     volunteer_subscore = calculateUserVolunteerSubscore(user_info["volunteer_hours"])
     transaction_subscore = calculateUserTransactionsSubscore(user_info["transactions"], vendor_info);
-    
-    return score + transaction_subscore + credit_score_subscore;
+    //currently multiplies (1 + percentage of spending that is local) * mapped credit score
+    return transaction_subscore * credit_score_subscore; 
 }
 
 var calculateUserCreditSubscore = function(user_credit_score){
@@ -177,23 +177,22 @@ var calculateUserVolunteerSubscore = function(user_volunteer_hours){
 
 /*takes in a user transactions object, and a vendor info object, and outputs a subscore*/
 var calculateUserTransactionsSubscore = function(user_transactions, vendor_info){
-    //dummy
-    transaction_score = 0;
+    //replace with percentage of spending that is 'local' (rating = 1)
+    var transaction_score = 0;
+    var total_spending = 0;
+    var local_spending = 0;
     for(var i = 0; i < user_transactions.length; i++){
         transaction = user_transactions[i]
+        console.log(JSON.stringify(transaction))
         vendor_rating = vendor_info[transaction["vendor"]]
-        //if 'good'
-        //replace with a map from rating to multipler or score function!
+        total_spending += parseInt(transaction["amount"])
         if(vendor_rating == 1){
-            transaction_score += transaction["amount"] * .2
-        }else if(vendor_rating == 2){
-            transaction_score += transaction["amount"] * .05
+            local_spending += parseInt(transaction["amount"]) 
         }
-        
-
     }
-    return transaction_score
-
+    var fraction_local = local_spending/total_spending
+    console.log(fraction_local + "  of users spending is local with " + total_spending + " total and " + local_spending + " local.")
+    return 1 + fraction_local;
 }
 
 /*should be refactored so only one method for both users and vendors collections!
