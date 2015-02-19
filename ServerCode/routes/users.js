@@ -1,4 +1,5 @@
 var mongo = require('mongodb');
+var _und = require("underscore-node");
 
 var Server = mongo.Server, Db = mongo.Db, BSON = mongo.BSONPure;
 
@@ -89,7 +90,8 @@ exports.updateUser = function(req, res) {
         });
     });
 }
-
+/*getScore needs fixing: should be able to get vendor, banking and all other backend info 
+from outside a request*/
 exports.getScore = function(req,res){
     console.log("getting score")
     db.collection('vendors', function(err, vendorCollection) {
@@ -102,7 +104,7 @@ exports.getScore = function(req,res){
                 userCollection.findOne({'_id':new BSON.ObjectID(id)}, function(err, user) {
                     user_name = user["name"];
                     user_transactions = JSON.stringify(user["transactions"]);
-                    score = calculateUserScore(user["transactions"], vendors[0])
+                    score = calculateUserScore(user, vendors[0])
                     res_str = user_name + " has the following score: " + score;
                     
                     console.log(res_str);
@@ -130,8 +132,51 @@ exports.deleteUser = function(req, res) {
     });
 } 
 
-/*takes in a user transactions object, and a vendor info object, and outputs a score*/
-var calculateUserScore = function(user_transactions, vendor_info){
+/*takes in a user object, and a vendor info object, and outputs a score*/
+var calculateUserScore = function(user_info, vendor_info){
+    score = 0
+    credit_score_subscore = calculateUserCreditSubscore(user_info["credit_score"])
+    //banking_subscore - need some sort of mapping/look-up for this
+    donations_subscore =calculateUserDonationsSubscore(user_info["donations"])
+    volunteer_subscore = calculateUserVolunteerSubscore(user_info["volunteer_hours"])
+    transaction_subscore = calculateUserTransactionsSubscore(user_info["transactions"], vendor_info);
+    
+    return score + transaction_subscore + credit_score_subscore;
+}
+
+var calculateUserCreditSubscore = function(user_credit_score){
+    console.log("calculating credit subscore given credit score" + user_credit_score)
+    /*scoreMap maps creditscore thresholds to econcit score thresholds*/
+    var scoreMap = { //temp hard-coded for mock
+        550:6, 
+        620:12, // 550-619 gets 12
+        680:18, //620-679 gets 18
+        740:24,
+        850:30 // 680-739 gets 24    //740 and up gets 30
+    };
+    credit_scores = _und.keys(scoreMap)
+    var i = 0;
+    while(i < credit_scores.length-1 && credit_scores[i] < user_credit_score){
+        i++
+    }
+    subscore = scoreMap[credit_scores[i]]
+    console.log("calculated credit subscore given credit score " + user_credit_score +" . found subscore = " + subscore)
+    return subscore 
+}
+
+var calculateUserDonationsSubscore = function(user_donations){
+    return user_donations;
+}
+
+var calculateUserVolunteerSubscore = function(user_volunteer_hours){
+    return user_volunteer_hours;
+}
+
+
+
+
+/*takes in a user transactions object, and a vendor info object, and outputs a subscore*/
+var calculateUserTransactionsSubscore = function(user_transactions, vendor_info){
     //dummy
     transaction_score = 0;
     for(var i = 0; i < user_transactions.length; i++){
