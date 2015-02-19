@@ -1,4 +1,6 @@
 (function($){ 
+
+
     var Transaction = Backbone.Model.extend({
       defaults: {
         vendor: "unknown",
@@ -28,23 +30,11 @@
       render: function(){
         console.log("rendering transacitons list view")
         //$('#transactions_container').html("transaction view: " + JSON.stringify(this.model))
-        $('#transactions_container').html('<ul id="transaction_list" class="list-group"></ul>')
+        $('#transactions_container').append('<ul id="transaction_list" class="list-group"></ul>')
         _.each(this.model.models, function (transaction) {
             $("#transaction_list").append(new TransactionListItemView({model:transaction}).render());
         }, this);
-        var form_template = _.template('<div style="padding: 100px 100px 10px;">\
-            <form class="transaction-input-form" role="form">\
-              <div class="input-group">\
-                <span class="input-group-addon">Vendor: </span>\
-                <input type="text" class="form-control" placeholder="" id="input-transaction-vendor" value="">\
-              </div>\
-              <div class="input-group">\
-                <span class="input-group-addon">Amount: $ </span>\
-                <input type="text" class="form-control" placeholder="" id="input-transaction-amount" value="">\
-              </div>\
-              <button class="btn btn-default" id="transaction_save_button">Save New Transaction</button>\
-            </form>\
-          </div>');
+        var form_template = _.template(template_test["transaction_form"]);
         $("#transactions_container").append(form_template);
       }
 
@@ -58,26 +48,7 @@
       }
     });
 
-    var TransactionFormView = Backbone.View.extend({
-      template: _.template('<div style="padding: 100px 100px 10px;">\
-            <form class="transaction-input-form" role="form">\
-              <div class="input-group">\
-                <span class="input-group-addon">Vendor: </span>\
-                <input type="text" class="form-control" placeholder="" id="input-transaction-vendor" value="">\
-              </div>\
-              <div class="input-group">\
-                <span class="input-group-addon">Amount: $ </span>\
-                <input type="text" class="form-control" placeholder="" id="input-transaction-amount" value="">\
-              </div>\
-              <button class="btn btn-default" id="transaction_save_button">Save New Transaction</button>\
-            </form>\
-          </div>'),
-      render: function(){
-        $("#transactions_container").append(this.template());
-      }
-
-    });
-
+   
 
     var User = Backbone.Model.extend({
         defaults: {
@@ -204,99 +175,20 @@
                             template_donations: this.model.get("donations"),
                             template_volunteer_hours: this.model.get("volunteer_hours")
                         }
-            console.log(JSON.stringify(user_info));              
-            var test_tpl = _.template('<p> This user has id <%= template_id%>! \
-                  This user has name <%= template_name%>!\
-                  This user has bank <%= template_bank%>!\
-                  This user has county <%= template_county%>!\
-                  This user has credit_score <%= template_credit_score%>!\
-                  This user has donations <%= template_donations%>!\
-                  This user has volunteer_hours <%= template_volunteer_hours%>!\
-                  now on multiple code lines!</p>');
-            var tpl = _.template('<div role="tabpanel"> \
-                    <!-- Nav tabs -->\
-                    <ul class="nav nav-tabs" role="tablist">\
-      <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>\
-      <li role="presentation"><a href="#giving" aria-controls="My Giving" role="tab" data-toggle="tab">My Giving</a></li>\
-       <li role="presentation"><a href="#banking" aria-controls="My Banking" role="tab" data-toggle="tab">My Banking</a></li>\
-      <li role="presentation"><a href="#spending" aria-controls="My Spending" role="tab" data-toggle="tab">My Spending</a></li>\
-    </ul>\
-    <!-- Tab panes -->\
-    <div class="tab-content">\
-      <div role="tabpanel" class="tab-pane active" id="home">\
-        <div class="container">\
-          <h1>Tell Us About Who You Are . . .. </h1>\
-            <div style="padding: 100px 100px 10px;">\
-              <form class="user-input-form" role="form">\
-                <div class="input-group">\
-                   <span class="input-group-addon">My name is </span>\
-                   <input type="text" class="form-control" placeholder="" id="input-name" value="<%= template_name%>">\
-                   \
-                </div>\
-                <div class="input-group">\
-                   <span class="input-group-addon">I live in </span>\
-                   <input type="text" class="form-control" placeholder="" id="input-county" value="<%= template_county%>">\
-                   <span class="input-group-addon"> County.</span>\
-                </div> \
-                <button class="btn btn-default" id="identity_save_button">Save Identity Information</button>\
-              </form>\
-            </div>\
-            <button class="btn btn-default" id="score_button">Get Score</button>\
-          </div>\
-        </div>\
-    <div role="tabpanel" class="tab-pane" id="giving">\
-        <div class="container">\
-            <h1>Tell Us About Your Giving . . . </h1>\
-            <div style="padding: 100px 100px 10px;">\
-              <form class="user-input-form" role="form">\
-                <div class="input-group">\
-                   <span class="input-group-addon">I gave $</span>\
-                   <input type="text" class="form-control" placeholder="" id="input-donations" value="<%= template_donations%>">\
-                   <span class="input-group-addon">.00 to charity</span> \
-                </div>\
-                <div class="input-group">\
-                   <span class="input-group-addon">I volunteered </span>\
-                   <input type="text" class="form-control" placeholder="" id="input-volunteer" value="<%= template_volunteer_hours%>">\
-                   <span class="input-group-addon"> hours in my community.</span>\
-                </div>\
-                <button class="btn btn-default" id="giving_save_button">Save Giving Information</button>\
-              </form>\
-            </div>\
-        </div>\
-    </div>\
-    <div role="tabpanel" class="tab-pane" id="banking">\
-        <div class="container">\
-          <h1>Tell Us About Your Banking . . . </h1>\
-          <div style="padding: 100px 100px 10px;">\
-            <form class="user-input-form" role="form">\
-              <div class="input-group">\
-                <span class="input-group-addon">I use </span>\
-                <input type="text" class="form-control" placeholder="" id="input-bank" value="<%= template_bank%>">\
-                <span class="input-group-addon"> for banking</span> \
-              </div>\
-              <div class="input-group">\
-                <span class="input-group-addon">My credit score is </span>\
-                <input type="text" class="form-control" placeholder="" id="input-credit-score" value="<%= template_credit_score%>">\
-              </div>\
-              <button class="btn btn-default" id="banking_save_button">Save Banking Information</button>\
-            </form>\
-          </div>\
-        </div>\
-    </div>\
-    <div role="tabpanel" class="tab-panel" id="spending">\
-    <div class="container">\
-    <div id="transactions_container"></div>\
-    </div>\
-    </div>\
-  </div>\
- </div>')
+            //console.log(JSON.stringify(user_info));             
+            
+            tpl = _.template(template_test["user_info"]);
             html_string = tpl(user_info);
             $(this.el).append(html_string);
         }
 
     });
     
-    var user = new User({id: "54e11cd0d171eca216be286b"})
+    var myTemplates = 0; //placeholder
+
+$.getScript("templates.js", function(){
+    var myTemplates = template_test;
+    var user = new User({id: "54e645ff4e93126e1ae3bbe7"})
     user.fetch({
         success : function(model, response){
             //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
@@ -306,6 +198,11 @@
 
         }
     });
+});
+
+
+
+
     
    
   
