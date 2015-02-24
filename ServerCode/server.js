@@ -2,7 +2,8 @@ var express = require('express'), user = require('./routes/users.js');
  
 var app = express();
 
-var port_num = 3333
+
+var port_num = 3000
 
 var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -19,6 +20,8 @@ var allowCrossDomain = function(req, res, next) {
 };
 
 app.configure(function () {
+  console.log(__dirname);
+  app.use(express.static(__dirname + "/../web"));
 	app.use(allowCrossDomain);
 	app.use(express.logger('dev')); /* 'default', 'short', 'tiny', 'dev' */
 	app.use(express.bodyParser());
