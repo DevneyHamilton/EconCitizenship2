@@ -1,4 +1,5 @@
 (function($){ 
+    var url_base = "http://ec2-54-67-45-196.us-west-1.compute.amazonaws.com/";
 
 
     var Transaction = Backbone.Model.extend({
@@ -61,13 +62,13 @@
             volunteer_hours: 0 
         },
         url : function() {
-            return this.id ? 'http://127.0.0.1:3333/users/' + this.id : 'http://127.0.0.1:3333/users';
+            return this.id ? url_base + 'users/' + this.id : url_base + 'users';
         } 
     });
 
     var Users = Backbone.Collection.extend({
         model: User,
-        url : "http://127.0.0.1:3333/users/",
+        url : url_base + "users/",
         initialize: function(){
             this.bind("reset", this.value_change);
 
@@ -100,7 +101,7 @@
         },
         getScore: function(e){
             e.preventDefault();
-            score_url_base = "http://localhost:3333/getScore/";
+            score_url_base =  url_base + "getScore/";
             score_url = score_url_base + this.model.id;
             $.ajax(score_url, {
                 type: "POST",
@@ -190,7 +191,7 @@
 
 $.getScript("templates.js", function(){
     var myTemplates = template_test;
-    var user = new User({id: "54e64d52a8cd69ee1bfc25db"})
+    var user = new User({id: "54ebcf7f9a87beb26012989b"})
     user.fetch({
         success : function(model, response){
             //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
