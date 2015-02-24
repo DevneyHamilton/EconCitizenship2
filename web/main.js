@@ -1,6 +1,6 @@
 (function($){ 
     var url_base = "http://ec2-54-67-45-196.us-west-1.compute.amazonaws.com/";
-
+    //var url_base = "http://localhost:3000/";
 
     var Transaction = Backbone.Model.extend({
       defaults: {
@@ -102,7 +102,8 @@
         getScore: function(e){
             e.preventDefault();
             score_url_base =  url_base + "getScore/";
-            score_url = score_url_base + this.model.id;
+            score_url = score_url_base + this.model.get("_id");
+            console.log(score_url)
             $.ajax(score_url, {
                 type: "POST",
                 success: function(response){
@@ -191,10 +192,11 @@
 
 $.getScript("templates.js", function(){
     var myTemplates = template_test;
-    var user = new User({id: "54ebcf7f9a87beb26012989b"})
-    user.fetch({
-        success : function(model, response){
+    var users = new Users()
+    users.fetch({
+        success : function(collection, response){
             //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
+            var model = collection.at(1);
             var user_view = new UserView({model: model});
             console.log("testing transactions availability: " + JSON.stringify(model.get("transactions")));
 
