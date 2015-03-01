@@ -5,8 +5,8 @@ var template_test = {
                 </div>\
                 <div class="tab-content"></div>\
   ',
-  "tab_nav_basic":'<li role="presentation" class="active"><a href="#<%= tab_title%>" aria-controls="<%= tab_title%>" role="tab" data-toggle="tab"><%= tab_title%></a></li>',
-  "tab_pane_basic":'<div role="tabpanel" class="tab-pane active" id="<%= tab_title%>">\
+  "tab_nav_basic":'<li role="presentation" ><a href="#<%= tab_title%>" aria-controls="<%= tab_title%>" role="tab" data-toggle="tab"><%= tab_title%></a></li>',
+  "tab_pane_basic":'<div role="tabpanel" class="tab-pane" id="<%= tab_title%>">\
                       <div class="container">\
                         <h3><%= tab_title%> </h3>\
                         <div style="padding: 20px 20px 10px;">\
@@ -16,6 +16,30 @@ var template_test = {
                         <div>\
                       </div>\
                     </div>',
+  "home_nav": '<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>',
+  "home_pane": '<div role="tabpanel" class="tab-pane active" id="home">\
+        <div class="container">\
+          <h3>Tell Us About Who You Are . . .. </h3>\
+            <div style="padding: 20px 20px 10px;">\
+              <form class="user-input-form" role="form">\
+                <div class="input-group">\
+                   <span class="input-group-addon">My name is </span>\
+                   <input type="text" class="form-control" placeholder="" id="input-name" value="<%= template_name%>">\
+                </div>\
+                <div class="input-group">\
+                   <span class="input-group-addon">I live in </span>\
+                   <input type="text" class="form-control" placeholder="" id="input-county" value="<%= template_county%>">\
+                   <span class="input-group-addon"> County.</span>\
+                </div> \
+                  <button class="btn btn-default" id="identity_save_button">Save Identity Information</button>\
+             </form>\
+            </div>\
+            <div id="score_container">\
+              <h4> Your score is currently <%=template_score%>.</h4>\
+              <button class="btn btn-default" id="score_button">Update Score</button>\
+            </div>\
+          </div>\
+        </div>',
 	"user_info" : '<div role="tabpanel"> \
                     <!-- Nav tabs -->\
                     <ul class="nav nav-tabs" role="tablist">\

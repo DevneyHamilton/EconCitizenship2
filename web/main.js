@@ -2,54 +2,27 @@
     var url_base = "http://ec2-54-67-45-196.us-west-1.compute.amazonaws.com/";
     //var url_base = "http://localhost:3000/";
 
-    var Transaction = Backbone.Model.extend({
-      defaults: {
-        vendor: "unknown",
-        amount: 0
-      }//,
-      // initialize: function(){
-      //   console.log("init Transaction model")
-      // }
-    });
-
-    var TransactionListItemView = Backbone.View.extend({
-      template: _.template('<li class="list-group-item"><%=vendor%> ---  $<%=amount%></li>'),
-
-      render:function (eventName) {
-          html_string = this.template(this.model.toJSON());
-          return html_string;
-      }
+    var Category = Backbone.Model.extend({
+      //takes a category object so far, from loaded categories.js. This can/should change in future
 
     });
 
-    var TransactionListView = Backbone.View.extend({
-      //el: $('#transactions_container'),
+    var CategoryView = Backbone.View.extend({
+      model: Category,
       initialize: function(){
-        console.log("init TransactionListView");
+        console.log("initing view for category: " + this.model.get("catName"));
         this.render();
       },
-      render: function(){
-        console.log("rendering transacitons list view")
-        //$('#transactions_container').html("transaction view: " + JSON.stringify(this.model))
-        $('#transactions_container').append('<ul id="transaction_list" class="list-group"></ul>')
-        _.each(this.model.models, function (transaction) {
-            $("#transaction_list").append(new TransactionListItemView({model:transaction}).render());
-        }, this);
-        var form_template = _.template(template_test["transaction_form"]);
-        $("#transactions_container").append(form_template);
+      //next: try to only make the template once
+      render:function(){
+        tab_info = {"tab_title": this.model.get("catName"), }
+        tab_nav_basic_template = _.template(myTemplates['tab_nav_basic']);
+        tab_pane_basic_template = _.template(myTemplates['tab_pane_basic']);
+        $('.nav-tabs').append(tab_nav_basic_template(tab_info));
+        $('.tab-content').append(tab_pane_basic_template(tab_info));
       }
 
-
     });
-
-    var TransactionCollection = Backbone.Collection.extend({
-      model: Transaction,
-      initialize: function(){
-        console.log("transaction collection inited");
-      }
-    });
-
-   
 
     var User = Backbone.Model.extend({
         defaults: {
@@ -66,6 +39,7 @@
         } 
     });
 
+    //TODO: We do NOT want to load all the users! Need to fix this when deving login
     var Users = Backbone.Collection.extend({
         model: User,
         url : url_base + "users/",
@@ -82,17 +56,11 @@
         //model: User,
         el: $('#user-container'), 
         //add event for saving info
-        events:{
-            'click button#giving_save_button' : 'saveGivingInfo',
-            'click button#identity_save_button' : 'saveIdentityInfo',
-            'click button#banking_save_button' : 'saveBankingInfo',
-            'click button#score_button' : 'getScore',
-            'click button#transaction_save_button': 'saveTransaction'
-        },
+        events:{},
         initialize:function(){
-            //console.log("init user view");
-            _.bindAll(this, 'render');
-            //this.render();
+
+              console.log("init user view");
+              _.bindAll(this, 'render'); //keeps 'this' this in afterRender
               this.render = _.wrap(this.render, function(render) {
                   render();
                   this.afterRender();
@@ -162,14 +130,15 @@
         },
         afterRender: function(){
           console.log("done rendering user view")
-          console.log("testing transactions availability in user view after render: " + JSON.stringify(this.model.get("transactions")))
-          var user_transactions = new TransactionCollection(this.model.get("transactions"));
-          var transactions_view = new TransactionListView({model: user_transactions});
-          //var transactions_form_view = new TransactionFormView();
+          _.each(myCategories, function(element, index, list){
+            console.log(element["name"]);
+            cat = new Category(element);
+            catView = new CategoryView({model: cat});
+          });
+
         },
         render:function(){
             //console.log("rendering user view")
-            //var tpl = _.template("single user view as template for " +  this.model.id);
             var user_info = {template_id : this.model.id, 
                             template_name: this.model.get("name"),
                             template_bank: this.model.get("bank"),
@@ -178,22 +147,21 @@
                             template_donations: this.model.get("donations"),
                             template_volunteer_hours: this.model.get("volunteer_hours"),
                             template_score: this.model.get("score")
-                        }
-            //console.log(JSON.stringify(user_info));             
-            
-            tpl = _.template(template_test["user_info"]);
-            html_string = tpl(user_info);
-            $(this.el).append(html_string);
+                        }          
+            user_basic_template = _.template(myTemplates['user_basic']);
+            $(this.el).html(user_basic_template());
+            home_nav_template = _.template(myTemplates['home_nav']);
+            home_pane_template = _.template(myTemplates['home_pane']);
+            $('.nav-tabs').append(home_nav_template());
+            $('.tab-content').append(home_pane_template(user_info));
         }
 
     });
     
-    var myTemplates = 0; //placeholder
-
     var test_templates = function(){
       console.log("testing templates");
-      user_basic_template = _.template(myTemplates['user_basic']);
-      $('#user-container').html(user_basic_template());
+      //user_basic_template = _.template(myTemplates['user_basic']);
+      //$('#user-container').html(user_basic_template());
       for(var i = 0; i < 7; i++ ){
         var tab_name = "test" + i
         test_tab_info = {"tab_title": tab_name}
@@ -205,21 +173,32 @@
       $($("li")[0]).addClass("active");
     };
 
-$.getScript("templates.js", function(){
-    myTemplates = template_test;
-    test_templates();
-    // var users = new Users()
-    // users.fetch({
-    //     success : function(collection, response){
-    //         //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
-    //         var model = collection.at(1);
-    //         var user_view = new UserView({model: model});
-    //         console.log("testing transactions availability: " + JSON.stringify(model.get("transactions")));
+    
+    //where execution starts
+    var myTemplates = 0; //placeholder
+    var myCategories = 0; //placeholder
+    $.getScript("templates.js", function(){
+        myTemplates = template_test;
+        test_templates();
+        $.getScript("categories.js", function(){
+          myCategories = categoriesModule();
+          var users = new Users()
+          users.fetch({
+            success : function(collection, response){
+              //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
+              var model = collection.at(1);
+              var user_view = new UserView({model: model});
+              
+
+            }
+          });
+        });
+
+        
+
+    });
 
 
-    //     }
-    // });
-});
 
 
 

@@ -1,4 +1,6 @@
-var express = require('express'), user = require('./routes/users.js');
+var express = require('express');
+var user = require('./routes/users.js');
+var categories = require('../web/categories.js'); //this is working
  
 var app = express();
 
