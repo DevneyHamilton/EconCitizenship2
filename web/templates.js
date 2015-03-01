@@ -1,4 +1,21 @@
 var template_test = {
+  "user_basic":'<div role="tabpanel"> \
+                  <ul class="nav nav-tabs" role="tablist">\
+                  </ul>\
+                </div>\
+                <div class="tab-content"></div>\
+  ',
+  "tab_nav_basic":'<li role="presentation" class="active"><a href="#<%= tab_title%>" aria-controls="<%= tab_title%>" role="tab" data-toggle="tab"><%= tab_title%></a></li>',
+  "tab_pane_basic":'<div role="tabpanel" class="tab-pane active" id="<%= tab_title%>">\
+                      <div class="container">\
+                        <h3><%= tab_title%> </h3>\
+                        <div style="padding: 20px 20px 10px;">\
+                          <form class="user-input-form" role="form">\
+                            <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= tab_title%> Information</button>\
+                          </form>\
+                        <div>\
+                      </div>\
+                    </div>',
 	"user_info" : '<div role="tabpanel"> \
                     <!-- Nav tabs -->\
                     <ul class="nav nav-tabs" role="tablist">\

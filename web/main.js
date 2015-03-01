@@ -190,19 +190,35 @@
     
     var myTemplates = 0; //placeholder
 
+    var test_templates = function(){
+      console.log("testing templates");
+      user_basic_template = _.template(myTemplates['user_basic']);
+      $('#user-container').html(user_basic_template());
+      for(var i = 0; i < 7; i++ ){
+        var tab_name = "test" + i
+        test_tab_info = {"tab_title": tab_name}
+        tab_nav_basic_template = _.template(myTemplates['tab_nav_basic']);
+        tab_pane_basic_template = _.template(myTemplates['tab_pane_basic']);
+        $('.nav-tabs').append(tab_nav_basic_template(test_tab_info));
+        $('.tab-content').append(tab_pane_basic_template(test_tab_info));
+      }
+      $($("li")[0]).addClass("active");
+    };
+
 $.getScript("templates.js", function(){
-    var myTemplates = template_test;
-    var users = new Users()
-    users.fetch({
-        success : function(collection, response){
-            //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
-            var model = collection.at(1);
-            var user_view = new UserView({model: model});
-            console.log("testing transactions availability: " + JSON.stringify(model.get("transactions")));
+    myTemplates = template_test;
+    test_templates();
+    // var users = new Users()
+    // users.fetch({
+    //     success : function(collection, response){
+    //         //console.log(JSON.stringify("fetched user with id: " + model.get("name")));
+    //         var model = collection.at(1);
+    //         var user_view = new UserView({model: model});
+    //         console.log("testing transactions availability: " + JSON.stringify(model.get("transactions")));
 
 
-        }
-    });
+    //     }
+    // });
 });
 
 
