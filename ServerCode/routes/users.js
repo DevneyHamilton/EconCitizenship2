@@ -27,8 +27,6 @@ db.open(function(err, db) {
 
 
 
-
-
 exports.findById = function(req, res) {
     var id = req.params.id;
     console.log('Retrieving user: ' + id);
@@ -115,6 +113,37 @@ exports.getScore = function(req,res){
         });
     });
     
+}
+
+exports.saveData = function(req, res){
+   var user_id = req.params.id;
+   console.log("saving data for user with id " + user_id + " and data: " + JSON.stringify(req.body));
+   db.collection('users', function(err, userCollection){
+        //will need to replace with findAndModify
+        var id = req.params.id;
+        userCollection.findOne({'_id':new BSON.ObjectID(id)}, function(err, user) {
+            var user_name = user["name"];
+            var old_data = user["data"];
+            console.log("old data: " + JSON.stringify(old_data))
+            //assumes only one category sent in request
+            var cat_name = Object.keys(req.body);
+            old_data[cat_name] = req.body[cat_name]; //insert new value for this input key
+            console.log("found user with name: " + user_name + " " + JSON.stringify(old_data));
+            //attempt to deal with id problem:
+            delete user["_id"];
+            user["data"] = old_data; //updated
+            console.log(JSON.stringify(user));
+            userCollection.update({'_id':new BSON.ObjectID(user_id)}, user, {safe:true}, function(err, result) {
+                if (err) {
+                    console.log('Error updating user: ' + err);
+                    res.send({'error':'An error has occurred'});
+                } else {
+                    console.log('' + result + ' document(s) updated');
+                    res.send(user);
+                }
+            });
+        });
+    });
 }
 
 exports.deleteUser = function(req, res) {
@@ -227,6 +256,7 @@ var populateDB = function() {
     {
             name: "A",
             county: "Santa Clara",
+            data:{},
             transactions:[
                 { vendor: "McKameys",
                     amount: 11
@@ -249,6 +279,7 @@ var populateDB = function() {
     {
         name: "B",
         county: "San Mateo",
+        data:{},
         transactions:[
                 { vendor: "Mercadito",
                     amount: 31
@@ -271,6 +302,7 @@ var populateDB = function() {
     {
         name: "C",
         county: "San Mateo",
+        data:{},
         transactions:[
                 { vendor: "McKameys",
                     amount: 20
@@ -286,6 +318,7 @@ var populateDB = function() {
     {
         name: "D",
         county: "Alameda",
+        data:{},
         transactions:[
                 { vendor: "Buy n Large",
                     amount: 23

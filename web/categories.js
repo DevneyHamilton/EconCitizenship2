@@ -3,7 +3,8 @@ var categoriesModule = function(){
 	var catsToExport = [];
 
 	var ScoringCategory = function(params){
-		this.catName = params["name"];
+		this.name = params["name"];
+		this.displayName = params["displayName"];
 		this.inputs = params["inputs"];
 		this.calculationFunction = params["calculationFunction"];
 		catsToExport.push(this); //adds to catsToExport so all are avai
@@ -12,9 +13,10 @@ var categoriesModule = function(){
 	//1) try making an array to push to
 	//2) try pushing 'this' inside teh ScoringCategory constructor
 
-	var TestCategory = new ScoringCategory({
-		name: "testing",
-		inputs: {"test_input":"default"},
+	var CreditCategory = new ScoringCategory({
+		name: "credit",
+		displayName:"Credit Rating",	
+		inputs: {"credit_score":"default"},
 		calculationFunction : function(inputs){
 			return 42;//always return 42
 		}
@@ -24,6 +26,7 @@ var categoriesModule = function(){
 	//The first iteration has a user & coach enter a category 1-5, which is the same as the subscore for this category
 	var BankCategory = new ScoringCategory({
 		name: "bank",
+		displayName: "Banking",
 		//may need to create an input object so we can include disply name, variable name, acceptable value range
 		inputs: {"bank_score": "default"},
 		calculationFunction : function(inputs){

@@ -1,8 +1,9 @@
 (function($){ 
-    var url_base = "http://ec2-54-67-45-196.us-west-1.compute.amazonaws.com/";
-    //var url_base = "http://localhost:3000/";
+    //var url_base = "http://ec2-54-67-45-196.us-west-1.compute.amazonaws.com/";
+    var url_base = "http://localhost:3000/";
 
     var Category = Backbone.Model.extend({
+      user: "unknown" //try adding a user model as an attribute?
       //takes a category object so far, from loaded categories.js. This can/should change in future
 
     });
@@ -10,16 +11,63 @@
     var CategoryView = Backbone.View.extend({
       model: Category,
       initialize: function(){
-        console.log("initing view for category: " + this.model.get("catName"));
+        console.log("initing view for category: " + this.model.get("name"));
+        console.log(". . . for user: " + this.model.get("user").get("name"));
+        _.bindAll(this, 'render', 'saveCategoryInfo');
         this.render();
       },
       //next: try to only make the template once
       render:function(){
-        tab_info = {"tab_title": this.model.get("catName"), }
+        tab_info = {"tab_title": this.model.get("name"), "display_name" : this.model.get("displayName") }
         tab_nav_basic_template = _.template(myTemplates['tab_nav_basic']);
         tab_pane_basic_template = _.template(myTemplates['tab_pane_basic']);
         $('.nav-tabs').append(tab_nav_basic_template(tab_info));
         $('.tab-content').append(tab_pane_basic_template(tab_info));
+        //handle inputs:
+        console.log(this.model.get("inputs"));
+        var input_key = Object.keys(this.model.get("inputs"))[0]; //just get first for now
+        console.log("input key in render: " + input_key)
+        var input_info = {"tab_title": this.model.get("name"),"input_key" : input_key, "input_value": this.model.get("inputs")[input_key] };
+        var selector = "#" + this.model.get("name") + " .user-input-form"
+        var input_template = _.template(myTemplates['input_basic']);
+        $(selector).prepend(input_template(input_info));
+        var button_selector = "#" + this.model.get("name") + "_save_button"; //has to match buttton id in template
+        //bind the save button
+        $(button_selector).click(this.saveCategoryInfo);
+      },
+
+      
+      saveCategoryInfo : function(e){
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        var user_model = this.model.get("user");
+        var cat_name = this.model.get("name");
+        var inputs = this.model.get("inputs");
+        var cat_info ={}; 
+        //handle one input - then put this into foreach over inputs, put each one into cat_info
+        var input_key = Object.keys(inputs)[0]
+
+        var input_selector = '#' + input_key + "_input"; //has to match input id in template
+        var input_value = $(input_selector).val()
+        cat_info[input_key] = input_value; //needs some validation
+        console.log([input_key, input_selector, input_value])
+        console.log("user id:" + user_model.get("_id") + " saving " + cat_name + " " + JSON.stringify(cat_info));
+        console.log("event happened! target: " + e.target.id + " for user " + user_model.get("name"));
+        save_data_url_base =  url_base + "saveData/";
+        save_data_url = save_data_url_base + user_model.get("_id");
+        var data_to_send = {};
+        data_to_send[cat_name] = cat_info;
+        console.log(save_data_url)
+        $.ajax(save_data_url, {
+            type: "POST",
+            dataType: "json",
+            data: data_to_send,
+            success: function(response){
+                console.log(response)
+
+            }
+
+        });
       }
 
     });
@@ -129,9 +177,13 @@
                 
         },
         afterRender: function(){
-          console.log("done rendering user view")
+          
+          var user_model = this.model;
+          console.log("done rendering user view for user " + user_model.get("name"))
           _.each(myCategories, function(element, index, list){
-            console.log(element["name"]);
+
+            console.log(element["name"] + " " + user_model.get("name"));
+            element["user"] = user_model;//sends entire user model object to category view for saving info. Can we do this better?
             cat = new Category(element);
             catView = new CategoryView({model: cat});
           });
@@ -158,28 +210,12 @@
 
     });
     
-    var test_templates = function(){
-      console.log("testing templates");
-      //user_basic_template = _.template(myTemplates['user_basic']);
-      //$('#user-container').html(user_basic_template());
-      for(var i = 0; i < 7; i++ ){
-        var tab_name = "test" + i
-        test_tab_info = {"tab_title": tab_name}
-        tab_nav_basic_template = _.template(myTemplates['tab_nav_basic']);
-        tab_pane_basic_template = _.template(myTemplates['tab_pane_basic']);
-        $('.nav-tabs').append(tab_nav_basic_template(test_tab_info));
-        $('.tab-content').append(tab_pane_basic_template(test_tab_info));
-      }
-      $($("li")[0]).addClass("active");
-    };
-
-    
     //where execution starts
     var myTemplates = 0; //placeholder
     var myCategories = 0; //placeholder
     $.getScript("templates.js", function(){
         myTemplates = template_test;
-        test_templates();
+        //test_templates();
         $.getScript("categories.js", function(){
           myCategories = categoriesModule();
           var users = new Users()

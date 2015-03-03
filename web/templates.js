@@ -5,13 +5,17 @@ var template_test = {
                 </div>\
                 <div class="tab-content"></div>\
   ',
-  "tab_nav_basic":'<li role="presentation" ><a href="#<%= tab_title%>" aria-controls="<%= tab_title%>" role="tab" data-toggle="tab"><%= tab_title%></a></li>',
+  "input_basic":'<div class="input-group">\
+                   <span class="input-group-addon"><%= input_key%>: </span>\
+                   <input type="text" class="form-control" placeholder="" id="<%= input_key%>_input" value="<%= input_value%>">\
+                </div>',
+  "tab_nav_basic":'<li role="presentation" ><a href="#<%= tab_title%>" aria-controls="<%= tab_title%>" role="tab" data-toggle="tab"><%= display_name%></a></li>',
   "tab_pane_basic":'<div role="tabpanel" class="tab-pane" id="<%= tab_title%>">\
                       <div class="container">\
-                        <h3><%= tab_title%> </h3>\
+                        <h3><%= display_name%> </h3>\
                         <div style="padding: 20px 20px 10px;">\
                           <form class="user-input-form" role="form">\
-                            <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= tab_title%> Information</button>\
+                            <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= display_name%> Information</button>\
                           </form>\
                         <div>\
                       </div>\

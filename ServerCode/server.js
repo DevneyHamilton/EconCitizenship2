@@ -37,6 +37,7 @@ app.post('/users', user.addUser);
   resp.send("33");
 
 });*/
+app.post('/saveData/:id', user.saveData);
 app.post('/getScore/:id', user.getScore);
 app.put('/users/:id', user.updateUser);
 app.delete('/users/:id',user.deleteUser);
