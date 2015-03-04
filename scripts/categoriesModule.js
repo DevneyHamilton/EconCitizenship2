@@ -5,7 +5,24 @@
 		var catsToExport = [];
 
 		//currently takes inputs object. Should just take array. 
-		var getWeightedAvg(inputs){
+		var getWeightedAvg = function(inputs){
+			var weighted_avg = 0;
+			var original_totals = [];
+			var keys = Object.keys(inputs);
+			var grand_total = 0.0
+			for(var i = 0; i < keys.length; i++ ){
+				var total = parseInt(inputs[keys[i]]) + 0.0;
+				original_totals.push(total);
+				grand_total += total;
+			}
+			console.log("grand_total: " + grand_total);
+			console.log("original_totals: " + JSON.stringify(original_totals));
+			for(var i = 0; i < original_totals.length; i++){
+				if(grand_total > 0){
+					weighted_avg += (i+1) * original_totals[i]/grand_total
+				}
+			}
+			return Math.ceil(weighted_avg);
 
 		}
 
@@ -89,14 +106,16 @@
 				var income = parseInt(inputs["net_income"]) + 0.0;
 				if(income > 0){
 					var raw_score = (donations + 22.5 * hours)/income
+					console.log("phil raw score:" + raw_score)
 					var adjusted_score = raw_score/county_average;
+					console.log("phil adjusted_score score:" + adjusted_score)
 					if(adjusted_score == 0){
 						subscore = 1;
-					}else if(subscore < .9){
+					}else if(adjusted_score < .9){
 						subscore = 2;
-					}else if(subscore < 1.1){
+					}else if(adjusted_score < 1.1){
 						subscore = 3;
-					}else if(subscore < 2){
+					}else if(adjusted_score < 2){
 						subscore = 4;
 					}else{
 						subscore = 5;
@@ -108,7 +127,7 @@
 
 		var EatingOutCategory = new ScoringCategory({
 			name: "eating_out",
-			displayName: "Consumer Spending - Eating Out",
+			displayName: "Eating Out",
 			inputs: {
 				"type_1_total" : 0,
 				"type_2_total" : 0,
@@ -117,27 +136,43 @@
 				"type_5_total" : 0
 			},
 			calculationFunction: function(inputs){
-				//could do fancy loop but no time to do it right
-				var weighted_avg = 0;
-				var original_totals = [];
-				var keys = Object.keys(inputs);
-				var grand_total = 0.0
-				for(var i = 0; i < keys.length; i++ ){
-					var total = parseInt(inputs[keys[i]]) + 0.0;
-					original_totals.push(total);
-					grand_total += total;
-				}
-				console.log("grand_total: " + grand_total);
-				console.log("original_totals: " + JSON.stringify(original_totals));
-				for(var i = 0; i < original_totals.length; i++){
-					if(grand_total > 0){
-						weighted_avg += (i+1) * original_totals[i]/grand_total
-					}
-				}
-				return Math.ceil(weighted_avg);
+				console.log("trying getWeightedAvg fun");
+				return getWeightedAvg(inputs);
+				// var weighted_avg = 0;
+				// var original_totals = [];
+				// var keys = Object.keys(inputs);
+				// var grand_total = 0.0
+				// for(var i = 0; i < keys.length; i++ ){
+				// 	var total = parseInt(inputs[keys[i]]) + 0.0;
+				// 	original_totals.push(total);
+				// 	grand_total += total;
+				// }
+				// console.log("grand_total: " + grand_total);
+				// console.log("original_totals: " + JSON.stringify(original_totals));
+				// for(var i = 0; i < original_totals.length; i++){
+				// 	if(grand_total > 0){
+				// 		weighted_avg += (i+1) * original_totals[i]/grand_total
+				// 	}
+				// }
+				// return Math.ceil(weighted_avg);
 			}
 		})
 
+		var GroceriesCategory = new ScoringCategory({
+			name: "groceries",
+			displayName: "Groceries/Household",
+			inputs:{
+				"type_1_total" : 0,
+				"type_2_total" : 0,
+				"type_3_total" : 0,
+				"type_4_total" : 0,
+				"type_5_total" : 0
+			},
+			calculationFunction : function(inputs){
+				return getWeightedAvg(inputs);
+			}
+
+		});
 
 		var SavingsCategory = new ScoringCategory({
 			name: "savings",
