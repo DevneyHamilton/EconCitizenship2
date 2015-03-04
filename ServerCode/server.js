@@ -1,6 +1,6 @@
 var express = require('express');
 var user = require('./routes/users.js');
-var categories = require('../web/categories.js'); //this is working
+var categories = require('../scripts/categoriesModule.js'); //this is working
  
 var app = express();
 

@@ -1,5 +1,7 @@
 var mongo = require('mongodb');
 var _und = require("underscore-node");
+var categoriesModule = require('../../scripts/categoriesModule.js');
+var myCatModule = categoriesModule.categoriesModuleFactory(); //hacky - fix the module!
 
 var Server = mongo.Server, Db = mongo.Db, BSON = mongo.BSONPure;
 
@@ -103,9 +105,10 @@ exports.getScore = function(req,res){
                     user_name = user["name"];
                     user_transactions = JSON.stringify(user["transactions"]);
                     score = calculateUserScore(user, vendors[0])
-                    res_str = "" + score; //make sure it's a string
                     
-                    console.log(res_str);
+                    var res_str = "" + score; //make sure it's a string
+                    
+                    console.log("score is :" + res_str);
                     res.header("Access-Control-Allow-Origin", "*");
                     res.send(res_str);
                 });
@@ -163,14 +166,18 @@ exports.deleteUser = function(req, res) {
 
 /*takes in a user object, and a vendor info object, and outputs a score*/
 var calculateUserScore = function(user_info, vendor_info){
-    score = 0
-    credit_score_subscore = calculateUserCreditSubscore(user_info["credit_score"])
-    //banking_subscore - need some sort of mapping/look-up for this
-    donations_subscore =calculateUserDonationsSubscore(user_info["donations"])
-    volunteer_subscore = calculateUserVolunteerSubscore(user_info["volunteer_hours"])
-    transaction_subscore = calculateUserTransactionsSubscore(user_info["transactions"], vendor_info);
-    //currently multiplies (1 + percentage of spending that is local) * mapped credit score
-    return transaction_subscore * credit_score_subscore; 
+    
+    var scoreFun = myCatModule["ScoringFunction"];
+    var score = scoreFun();
+    return score;
+    // score = 0
+    // credit_score_subscore = calculateUserCreditSubscore(user_info["credit_score"])
+    // //banking_subscore - need some sort of mapping/look-up for this
+    // donations_subscore =calculateUserDonationsSubscore(user_info["donations"])
+    // volunteer_subscore = calculateUserVolunteerSubscore(user_info["volunteer_hours"])
+    // transaction_subscore = calculateUserTransactionsSubscore(user_info["transactions"], vendor_info);
+    // //currently multiplies (1 + percentage of spending that is local) * mapped credit score
+    // return transaction_subscore * credit_score_subscore; 
 }
 
 var calculateUserCreditSubscore = function(user_credit_score){

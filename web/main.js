@@ -104,7 +104,7 @@
         //model: User,
         el: $('#user-container'), 
         //add event for saving info
-        events:{},
+        events:{'click button#score_button' : 'getScore'},
         initialize:function(){
 
               console.log("init user view");
@@ -216,8 +216,8 @@
     $.getScript("templates.js", function(){
         myTemplates = template_test;
         //test_templates();
-        $.getScript("categories.js", function(){
-          myCategories = categoriesModule();
+        //$.getScript("categoriesModule.js", function(){
+          myCategories = categoriesModule.categoriesModuleFactory()["categories"];
           var users = new Users()
           users.fetch({
             success : function(collection, response){
@@ -228,7 +228,7 @@
 
             }
           });
-        });
+        //});
 
         
 
