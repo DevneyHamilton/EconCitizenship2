@@ -166,9 +166,9 @@ exports.deleteUser = function(req, res) {
 
 /*takes in a user object, and a vendor info object, and outputs a score*/
 var calculateUserScore = function(user_info, vendor_info){
-    
+    console.log("user data in score fn: " + JSON.stringify(user_info["data"]));
     var scoreFun = myCatModule["ScoringFunction"];
-    var score = scoreFun();
+    var score = scoreFun(user_info["data"], myCatModule["categories"]);
     return score;
     // score = 0
     // credit_score_subscore = calculateUserCreditSubscore(user_info["credit_score"])

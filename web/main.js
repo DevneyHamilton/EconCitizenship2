@@ -25,12 +25,16 @@
         $('.tab-content').append(tab_pane_basic_template(tab_info));
         //handle inputs:
         console.log(this.model.get("inputs"));
-        var input_key = Object.keys(this.model.get("inputs"))[0]; //just get first for now
-        console.log("input key in render: " + input_key)
-        var input_info = {"tab_title": this.model.get("name"),"input_key" : input_key, "input_value": this.model.get("inputs")[input_key] };
+        var cat_inputs = this.model.get("inputs");
+        var input_keys = Object.keys(cat_inputs);
         var selector = "#" + this.model.get("name") + " .user-input-form"
-        var input_template = _.template(myTemplates['input_basic']);
-        $(selector).prepend(input_template(input_info));
+        var input_template = _.template(myTemplates['input_basic']); 
+        var cat_name = this.model.get("name");
+        _.each(input_keys, function(input_key, index, list){
+            console.log("input key in render: " + input_key)
+            var input_info = {"tab_title": cat_name,"input_key" : input_key, "input_value": cat_inputs[input_key] };     
+            $(selector).prepend(input_template(input_info));
+        });
         var button_selector = "#" + this.model.get("name") + "_save_button"; //has to match buttton id in template
         //bind the save button
         $(button_selector).click(this.saveCategoryInfo);
@@ -42,15 +46,17 @@
         e.preventDefault();
         var user_model = this.model.get("user");
         var cat_name = this.model.get("name");
-        var inputs = this.model.get("inputs");
+        var cat_inputs = this.model.get("inputs");
         var cat_info ={}; 
         //handle one input - then put this into foreach over inputs, put each one into cat_info
-        var input_key = Object.keys(inputs)[0]
+        var input_keys = Object.keys(cat_inputs)
+        _.each(input_keys, function(input_key, index, list){
+            var input_selector = '#' + input_key + "_input"; //has to match input id in template
+            var input_value = $(input_selector).val()
+            cat_info[input_key] = input_value; //needs some validation 
+            console.log([input_key, input_selector, input_value])
+        });
 
-        var input_selector = '#' + input_key + "_input"; //has to match input id in template
-        var input_value = $(input_selector).val()
-        cat_info[input_key] = input_value; //needs some validation
-        console.log([input_key, input_selector, input_value])
         console.log("user id:" + user_model.get("_id") + " saving " + cat_name + " " + JSON.stringify(cat_info));
         console.log("event happened! target: " + e.target.id + " for user " + user_model.get("name"));
         save_data_url_base =  url_base + "saveData/";
