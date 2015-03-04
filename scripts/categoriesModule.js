@@ -67,6 +67,39 @@
 			}
 		});
 
+		var PhilanthropyCategory = new ScoringCategory({
+			name: "philanthropy",
+			displayName: "Philanthropy",
+			inputs: {
+				"donations_in_dollars" : 1,
+				"hours_volunteered": 1,
+				"net_income": 1,
+				"county": "unknown"
+			},
+			calculationFunction:function(inputs){
+				var subscore = 0;
+				var county_average= .04 //hardcoded
+				var donations = parseInt(inputs["donations_in_dollars"]);
+				var hours = parseInt(inputs["hours_volunteered"]);
+				var income = parseInt(inputs["net_income"]) + 0.0;
+				if(income > 0){
+					var raw_score = (donations + 22.5 * hours)/income
+					var adjusted_score = raw_score/county_average;
+					if(adjusted_score == 0){
+						subscore = 1;
+					}else if(subscore < .9){
+						subscore = 2;
+					}else if(subscore < 1.1){
+						subscore = 3;
+					}else if(subscore < 2){
+						subscore = 4;
+					}else{
+						subscore = 5;
+					}
+				}
+				return subscore;
+			}
+		})
 
 
 		var SavingsCategory = new ScoringCategory({
@@ -93,7 +126,6 @@
 				}
 				return savings_subscore;
 			}
-
 		});
 
 		module["categories"] = catsToExport;
