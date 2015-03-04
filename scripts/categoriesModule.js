@@ -4,6 +4,11 @@
 		var module = {};
 		var catsToExport = [];
 
+		//currently takes inputs object. Should just take array. 
+		var getWeightedAvg(inputs){
+
+		}
+
 		var ScoringFunction = function(user_data, categories){ //passing catsToExport back into this function. That's weird, need to figure out how to use this properly.
 			var catsFromUser = Object.keys(user_data); //user only has cat stored if they saved a val for it
 			var score = 0; //for now we will just add, then I'll include the mapping to credit score vals
@@ -98,6 +103,38 @@
 					}
 				}
 				return subscore;
+			}
+		})
+
+		var EatingOutCategory = new ScoringCategory({
+			name: "eating_out",
+			displayName: "Consumer Spending - Eating Out",
+			inputs: {
+				"type_1_total" : 0,
+				"type_2_total" : 0,
+				"type_3_total" : 0,
+				"type_4_total" : 0,
+				"type_5_total" : 0
+			},
+			calculationFunction: function(inputs){
+				//could do fancy loop but no time to do it right
+				var weighted_avg = 0;
+				var original_totals = [];
+				var keys = Object.keys(inputs);
+				var grand_total = 0.0
+				for(var i = 0; i < keys.length; i++ ){
+					var total = parseInt(inputs[keys[i]]) + 0.0;
+					original_totals.push(total);
+					grand_total += total;
+				}
+				console.log("grand_total: " + grand_total);
+				console.log("original_totals: " + JSON.stringify(original_totals));
+				for(var i = 0; i < original_totals.length; i++){
+					if(grand_total > 0){
+						weighted_avg += (i+1) * original_totals[i]/grand_total
+					}
+				}
+				return Math.ceil(weighted_avg);
 			}
 		})
 
