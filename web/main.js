@@ -27,13 +27,14 @@
         console.log(this.model.get("inputs"));
         var cat_inputs = this.model.get("inputs");
         var input_keys = Object.keys(cat_inputs);
-        var selector = "#" + this.model.get("name") + " .user-input-form"
+        //var selector = "#" + this.model.get("name") + " .user-input-form"
+        var selector = "#" + this.model.get("name") + "_inputs_container"
         var input_template = _.template(myTemplates['input_basic']); 
         var cat_name = this.model.get("name");
         _.each(input_keys, function(input_key, index, list){
             console.log("input key in render: " + input_key)
             var input_info = {"tab_title": cat_name,"input_key" : input_key, "input_value": cat_inputs[input_key] };     
-            $(selector).prepend(input_template(input_info));
+            $(selector).append(input_template(input_info));
         });
         var button_selector = "#" + this.model.get("name") + "_save_button"; //has to match buttton id in template
         //bind the save button
@@ -220,6 +221,7 @@
     var myTemplates = 0; //placeholder
     var myCategories = 0; //placeholder
     $.getScript("templates.js", function(){
+        console.log("in main I'm editing");
         myTemplates = template_test;
         //test_templates();
         //$.getScript("categoriesModule.js", function(){

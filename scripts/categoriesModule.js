@@ -1,6 +1,6 @@
 (function(exports){
 	exports.categoriesModuleFactory = function(){ //hacky - need to clean up. this module should just export itscomponents, not itself
-		console.log("categoriesModule executing");
+		console.log("categoriesModule executing from file I'm editing now!");
 		var module = {};
 		var catsToExport = [];
 
@@ -55,9 +55,17 @@
 		//1) try making an array to push to
 		//2) try pushing 'this' inside teh ScoringCategory constructor
 
+		var DummyCategory = new ScoringCategory({
+			name: "dummy",
+			displayName: "symlink working?",
+			inputs:{"yay": "we're here!"},
+			calculationFunction:function(inputs){
+				return 1000;
+			}
+		});
 		var CreditCategory = new ScoringCategory({
 			name: "credit",
-			displayName:"Credit Rating",	
+			displayName:"Credit Score",	
 			inputs: {"credit_score":"default"},
 			calculationFunction : function(inputs){
 				var subscore = 0;
@@ -91,10 +99,10 @@
 
 		var PhilanthropyCategory = new ScoringCategory({
 			name: "philanthropy",
-			displayName: "Philanthropy",
+			displayName: "Community Engagement",
 			inputs: {
-				"donations_in_dollars" : 1,
 				"hours_volunteered": 1,
+				"donations_in_dollars" : 1,
 				"net_income": 1,
 				"county": "unknown"
 			},
@@ -125,55 +133,6 @@
 			}
 		})
 
-		var EatingOutCategory = new ScoringCategory({
-			name: "eating_out",
-			displayName: "Eating Out",
-			inputs: {
-				"type_1_total" : 0,
-				"type_2_total" : 0,
-				"type_3_total" : 0,
-				"type_4_total" : 0,
-				"type_5_total" : 0
-			},
-			calculationFunction: function(inputs){
-				console.log("trying getWeightedAvg fun");
-				return getWeightedAvg(inputs);
-				// var weighted_avg = 0;
-				// var original_totals = [];
-				// var keys = Object.keys(inputs);
-				// var grand_total = 0.0
-				// for(var i = 0; i < keys.length; i++ ){
-				// 	var total = parseInt(inputs[keys[i]]) + 0.0;
-				// 	original_totals.push(total);
-				// 	grand_total += total;
-				// }
-				// console.log("grand_total: " + grand_total);
-				// console.log("original_totals: " + JSON.stringify(original_totals));
-				// for(var i = 0; i < original_totals.length; i++){
-				// 	if(grand_total > 0){
-				// 		weighted_avg += (i+1) * original_totals[i]/grand_total
-				// 	}
-				// }
-				// return Math.ceil(weighted_avg);
-			}
-		})
-
-		var GroceriesCategory = new ScoringCategory({
-			name: "groceries",
-			displayName: "Groceries/Household",
-			inputs:{
-				"type_1_total" : 0,
-				"type_2_total" : 0,
-				"type_3_total" : 0,
-				"type_4_total" : 0,
-				"type_5_total" : 0
-			},
-			calculationFunction : function(inputs){
-				return getWeightedAvg(inputs);
-			}
-
-		});
-
 		var SavingsCategory = new ScoringCategory({
 			name: "savings",
 			displayName: "Savings",
@@ -197,6 +156,37 @@
 					}
 				}
 				return savings_subscore;
+			}
+		});
+
+		var GroceriesCategory = new ScoringCategory({
+			name: "groceries",
+			displayName: "Groceries/Household",
+			inputs:{
+				"type_1_total" : 0,
+				"type_2_total" : 0,
+				"type_3_total" : 0,
+				"type_4_total" : 0,
+				"type_5_total" : 0
+			},
+			calculationFunction : function(inputs){
+				return getWeightedAvg(inputs);
+			}
+
+		});
+
+		var EatingOutCategory = new ScoringCategory({
+			name: "eating_out",
+			displayName: "Eating Out",
+			inputs: {
+				"type_1_total" : 0,
+				"type_2_total" : 0,
+				"type_3_total" : 0,
+				"type_4_total" : 0,
+				"type_5_total" : 0
+			},
+			calculationFunction: function(inputs){
+				return getWeightedAvg(inputs);
 			}
 		});
 

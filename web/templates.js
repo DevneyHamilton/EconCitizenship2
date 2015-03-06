@@ -15,6 +15,7 @@ var template_test = {
                         <h3><%= display_name%> </h3>\
                         <div style="padding: 20px 20px 10px;">\
                           <form class="user-input-form" role="form">\
+                            <div id="<%= tab_title%>_inputs_container"></div>\
                             <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= display_name%> Information</button>\
                           </form>\
                         <div>\
