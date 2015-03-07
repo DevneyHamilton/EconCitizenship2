@@ -130,7 +130,28 @@
             $.ajax(score_url, {
                 type: "POST",
                 success: function(response){
-                    $("#score_container h4").html("Your score is " + response + ".")
+                    var score_info = JSON.parse(response);
+                    //template this later
+                    var score_info_template = _.template('<p>Your <%= score_type%> is: <%= score_value%> <\p> ')
+                    var score_type_map = {
+                        "raw_score" : "raw Economic Citizenship score",
+                        "mapped_score" : "score scaled to Credit Scoring",
+                        "credit" : "credit subscore",
+                        "bank": "banking subscore",
+                        "philanthropy" : "community engagement subscore",
+                        "savings" : "savings subscore",
+                        "groceries" : "groceries subscore",
+                        "eating_out" : "subscore for eating_out"
+                    };
+                    var score_keys = Object.keys(score_info);
+                    var info_string = "";
+                    _.each(score_keys, function(score_key, index, list){
+                        info_string += score_info_template({"score_type": score_type_map[score_key], "score_value": score_info[score_key]});
+                    });
+                   // info_string = score_info_template({"score_type" : "raw Economic Citizenship score", "score_value" :score_info["raw_score"] });
+                    //info_string += score_info_template({"score_type" : "score scaled to Credit Scoring", "score_value" : score_info["mapped_score"]  });
+                    //info_string += score_info_template({"score_type" : "banking subscore", "score_value" : score_info["bank"]});
+                    $("#score_container h4").html(info_string)
                     console.log(response)
 
                 }
