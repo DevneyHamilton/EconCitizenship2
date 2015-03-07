@@ -105,8 +105,8 @@ exports.getScore = function(req,res){
                     user_name = user["name"];
                     user_transactions = JSON.stringify(user["transactions"]);
                     score = calculateUserScore(user, vendors[0])
-                    
-                    var res_str = "" + score; //make sure it's a string
+                    console.log("in getScore: " + score)
+                    var res_str = score; //make sure it's a string
                     
                     console.log("score is :" + res_str);
                     res.header("Access-Control-Allow-Origin", "*");

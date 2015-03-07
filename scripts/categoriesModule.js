@@ -1,6 +1,6 @@
 (function(exports){
 	exports.categoriesModuleFactory = function(){ //hacky - need to clean up. this module should just export itscomponents, not itself
-		console.log("categoriesModule executing from file I'm editing now!");
+		console.log("categoriesModule executing from file I'm editing score mapping in");
 		var module = {};
 		var catsToExport = [];
 
@@ -26,9 +26,37 @@
 
 		}
 
+		var mapEconCitScoreToCreditScoreScale = function(score){
+            var EconCitRange = [0,6]
+			var CSRange = [300, 550]
+            if(score < 7){
+                EconCitRange = [0,6]
+                CSRange = [300, 549]
+            }else if(score< 13){
+                EconCitRange = [7,12]
+                CSRange = [550, 619]
+                
+            }else if(score < 19){
+                EconCitRange = [13,18]
+                CSRange = [620, 679]
+            }else if(score < 25){
+                EconCitRange = [19,24]
+                CSRange = [680, 739]
+            }else{
+                EconCitRange = [25,30]
+                CSRange = [740, 850]   
+            }
+			var multiplier = (CSRange[1] - CSRange[0])/(EconCitRange[1] - EconCitRange[0])
+			//subtract the min in the econCitRange, then add that times the multiplier to the min of the CS range
+			var value =  CSRange[0] + multiplier * (score - EconCitRange[0])
+			return value;
+		}
+        
+
 		var ScoringFunction = function(user_data, categories){ //passing catsToExport back into this function. That's weird, need to figure out how to use this properly.
 			var catsFromUser = Object.keys(user_data); //user only has cat stored if they saved a val for it
 			var score = 0; //for now we will just add, then I'll include the mapping to credit score vals
+			var score_info = {}
 			categories.forEach(function(element, index, list){
 				var cat_name = element["name"];
 				if(cat_name in user_data){
@@ -36,9 +64,17 @@
 					var subscore = subscoreFun(user_data[cat_name])
 					console.log(cat_name + " subscore: " + subscore);
 					score += subscore;
+					score_info[cat_name] = subscore;
 				}
 			});
-			return score;
+			var raw_score = score;
+			score_info["raw_score"] = score;
+			
+			var mapped_score = mapEconCitScoreToCreditScoreScale(score);
+			score_info["mapped_score"] = mapped_score;
+			//var score_info = {"raw_score" : score, "mapped_score" : mapped_score};
+			var res_string = JSON.stringify(score_info);
+			return res_string;
 		};
 
 		module["ScoringFunction"] = ScoringFunction;
@@ -55,14 +91,7 @@
 		//1) try making an array to push to
 		//2) try pushing 'this' inside teh ScoringCategory constructor
 
-		var DummyCategory = new ScoringCategory({
-			name: "dummy",
-			displayName: "symlink working?",
-			inputs:{"yay": "we're here!"},
-			calculationFunction:function(inputs){
-				return 1000;
-			}
-		});
+
 		var CreditCategory = new ScoringCategory({
 			name: "credit",
 			displayName:"Credit Score",	
@@ -163,11 +192,11 @@
 			name: "groceries",
 			displayName: "Groceries/Household",
 			inputs:{
-				"type_1_total" : 0,
-				"type_2_total" : 0,
-				"type_3_total" : 0,
-				"type_4_total" : 0,
-				"type_5_total" : 0
+				"groceries_type_1_total" : 0,
+				"groceries_type_2_total" : 0,
+				"groceries_type_3_total" : 0,
+				"groceries_type_4_total" : 0,
+				"groceries_type_5_total" : 0
 			},
 			calculationFunction : function(inputs){
 				return getWeightedAvg(inputs);
