@@ -1,6 +1,6 @@
 (function(exports){
 	exports.categoriesModuleFactory = function(){ //hacky - need to clean up. this module should just export itscomponents, not itself
-		console.log("categoriesModule executing from file I'm editing score mapping in");
+		console.log("categoriesModule executing from file I'm editing score mapping in on amazon");
 		var module = {};
 		var catsToExport = [];
 

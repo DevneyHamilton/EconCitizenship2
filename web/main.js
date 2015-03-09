@@ -111,7 +111,8 @@
         //model: User,
         el: $('#user-container'), 
         //add event for saving info
-        events:{'click button#score_button' : 'getScore'},
+        events:{'click button#score_button' : 'getScore',
+                'click button#identity_save_button': 'saveIdentityInfo'},
         initialize:function(){
 
               console.log("init user view");
@@ -160,6 +161,9 @@
         },
         saveIdentityInfo: function(e){
             e.preventDefault();
+            console.log("saving id info:")
+            var idInfoToSave = {"name": $('#input-name').val(), "county": $('#input-county').val()};
+            console.log(JSON.stringify(idInfoToSave));
             this.model.set({"name": $('#input-name').val(), "county": $('#input-county').val()})
             this.model.save({
                 success: function(model,response){
