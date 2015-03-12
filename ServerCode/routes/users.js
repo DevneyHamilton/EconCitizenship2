@@ -1,7 +1,7 @@
 var mongo = require('mongodb');
 var _und = require("underscore-node");
 var categoriesModule = require('../../scripts/categoriesModule.js');
-var myCatModule = categoriesModule.categoriesModuleFactory(); //hacky - fix the module!
+var myCategories = categoriesModule.getCategories(); //hacky - fix the module!
 
 var Server = mongo.Server, Db = mongo.Db, BSON = mongo.BSONPure;
 
@@ -136,6 +136,10 @@ exports.saveData = function(req, res){
                     console.log('Error updating user: ' + err);
                     res.send({'error':'An error has occurred'});
                 } else {
+                    //send back category score
+                    
+
+                    
                     console.log('' + result + ' document(s) updated');
                     res.send(user);
                 }
@@ -162,14 +166,10 @@ exports.deleteUser = function(req, res) {
 /*takes in a user object, and a vendor info object, and outputs a score*/
 var calculateUserScore = function(user_info, vendor_info){
     console.log("user data in score fn: " + JSON.stringify(user_info["data"]));
-    var scoreFun = myCatModule["ScoringFunction"];
-    var score = scoreFun(user_info["data"], myCatModule["categories"]);
+    var scoreFun = categoriesModule.ScoringFunction;
+    var score = scoreFun(user_info["data"], myCategories);
     return score;
 }
-
-
-
-
 
 
 var populateDB = function() {

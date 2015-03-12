@@ -14,6 +14,7 @@
         console.log("initing view for category: " + this.model.get("name"));
         console.log(". . . for user: " + this.model.get("user").get("name"));
         _.bindAll(this, 'render', 'saveCategoryInfo');
+        Backbone.Validation.bind(this);
         this.render();
       },
       //next: try to only make the template once
@@ -40,8 +41,6 @@
         //bind the save button
         $(button_selector).click(this.saveCategoryInfo);
       },
-
-      
       saveCategoryInfo : function(e){
         e.stopImmediatePropagation();
         e.preventDefault();
@@ -52,12 +51,13 @@
         //handle one input - then put this into foreach over inputs, put each one into cat_info
         var input_keys = Object.keys(cat_inputs)
         _.each(input_keys, function(input_key, index, list){
+
+
             var input_selector = '#' + input_key + "_input"; //has to match input id in template
             var input_value = $(input_selector).val()
             cat_info[input_key] = input_value; //needs some validation 
             console.log([input_key, input_selector, input_value])
         });
-
         console.log("user id:" + user_model.get("_id") + " saving " + cat_name + " " + JSON.stringify(cat_info));
         console.log("event happened! target: " + e.target.id + " for user " + user_model.get("name"));
         save_data_url_base =  url_base + "saveData/";
@@ -83,17 +83,13 @@
         defaults: {
             name: "unknown",
             county: "Santa Clara",
-            spending:[],
-            bank: "unknown",
-            credit_score:0,
-            donations:0,
-            volunteer_hours: 0 
+            data:{}
         },
         url : function() {
             var id = this.get("_id") 
             console.log("user id is: " + id)
             return id ? url_base + 'users/' + id : url_base + 'users';
-        } 
+        }
     });
 
     //TODO: We do NOT want to load all the users! Need to fix this when deving login
@@ -123,6 +119,7 @@
                   render();
                   this.afterRender();
               });
+              Backbone.Validation.bind(this);
               this.render(); 
         },
         getScore: function(e){
@@ -209,6 +206,7 @@
             home_pane_template = _.template(myTemplates['home_pane']);
             $('.nav-tabs').append(home_nav_template());
             $('.tab-content').append(home_pane_template(user_info));
+            
         }
 
     });
@@ -221,7 +219,7 @@
         myTemplates = template_test;
         //test_templates();
         //$.getScript("categoriesModule.js", function(){
-          myCategories = categoriesModule.categoriesModuleFactory()["categories"];
+          myCategories = categoriesModule.getCategories();
           var users = new Users()
           users.fetch({
             success : function(collection, response){

@@ -1,95 +1,14 @@
 (function(exports){
-	exports.categoriesModuleFactory = function(){ //hacky - need to clean up. this module should just export itscomponents, not itself
-		console.log("categoriesModule executing from file I'm editing score mapping in on amazon");
-		var module = {};
+	exports.getCategories = function(){
 		var catsToExport = [];
-
-		//currently takes inputs object. Should just take array. 
-		var getWeightedAvg = function(inputs){
-			var weighted_avg = 0;
-			var original_totals = [];
-			var keys = Object.keys(inputs);
-			var grand_total = 0.0
-			for(var i = 0; i < keys.length; i++ ){
-				var total = parseInt(inputs[keys[i]]) + 0.0;
-				original_totals.push(total);
-				grand_total += total;
-			}
-			console.log("grand_total: " + grand_total);
-			console.log("original_totals: " + JSON.stringify(original_totals));
-			for(var i = 0; i < original_totals.length; i++){
-				if(grand_total > 0){
-					weighted_avg += (i+1) * original_totals[i]/grand_total
-				}
-			}
-			return Math.ceil(weighted_avg);
-
-		}
-
-		var mapEconCitScoreToCreditScoreScale = function(score){
-            var EconCitRange = [0,6]
-			var CSRange = [300, 550]
-            if(score < 7){
-                EconCitRange = [0,6]
-                CSRange = [300, 549]
-            }else if(score< 13){
-                EconCitRange = [7,12]
-                CSRange = [550, 619]
-                
-            }else if(score < 19){
-                EconCitRange = [13,18]
-                CSRange = [620, 679]
-            }else if(score < 25){
-                EconCitRange = [19,24]
-                CSRange = [680, 739]
-            }else{
-                EconCitRange = [25,30]
-                CSRange = [740, 850]   
-            }
-			var multiplier = (CSRange[1] - CSRange[0])/(EconCitRange[1] - EconCitRange[0])
-			//subtract the min in the econCitRange, then add that times the multiplier to the min of the CS range
-			var value =  CSRange[0] + multiplier * (score - EconCitRange[0])
-			return value;
-		}
-        
-
-		var ScoringFunction = function(user_data, categories){ //passing catsToExport back into this function. That's weird, need to figure out how to use this properly.
-			var catsFromUser = Object.keys(user_data); //user only has cat stored if they saved a val for it
-			var score = 0; //for now we will just add, then I'll include the mapping to credit score vals
-			var score_info = {}
-			categories.forEach(function(element, index, list){
-				var cat_name = element["name"];
-				if(cat_name in user_data){
-					var subscoreFun = element["calculationFunction"];
-					var subscore = subscoreFun(user_data[cat_name])
-					console.log(cat_name + " subscore: " + subscore);
-					score += subscore;
-					score_info[cat_name] = subscore;
-				}
-			});
-			var raw_score = score;
-			score_info["raw_score"] = score;
-			
-			var mapped_score = mapEconCitScoreToCreditScoreScale(score);
-			score_info["mapped_score"] = mapped_score;
-			//var score_info = {"raw_score" : score, "mapped_score" : mapped_score};
-			var res_string = JSON.stringify(score_info);
-			return res_string;
-		};
-
-		module["ScoringFunction"] = ScoringFunction;
-
 
 		var ScoringCategory = function(params){
 			this.name = params["name"];
 			this.displayName = params["displayName"];
 			this.inputs = params["inputs"];
 			this.calculationFunction = params["calculationFunction"];
-			catsToExport.push(this); //adds to catsToExport so all are avai
+			catsToExport.push(this);
 		};
-
-		//1) try making an array to push to
-		//2) try pushing 'this' inside teh ScoringCategory constructor
 
 
 		var CreditCategory = new ScoringCategory({
@@ -219,9 +138,83 @@
 			}
 		});
 
-		module["categories"] = catsToExport;
-		return module;
-		//return([TestCategory, BankCategory]);//returns list of category objects
+		return catsToExport;
+	};
 
-	};//end categoriesModule
+		
+
+	//currently takes inputs object. Should just take array. 
+	var getWeightedAvg = function(inputs){
+		var weighted_avg = 0;
+		var original_totals = [];
+		var keys = Object.keys(inputs);
+		var grand_total = 0.0
+		for(var i = 0; i < keys.length; i++ ){
+			var total = parseInt(inputs[keys[i]]) + 0.0;
+			original_totals.push(total);
+			grand_total += total;
+		}
+		console.log("grand_total: " + grand_total);
+		console.log("original_totals: " + JSON.stringify(original_totals));
+		for(var i = 0; i < original_totals.length; i++){
+			if(grand_total > 0){
+				weighted_avg += (i+1) * original_totals[i]/grand_total
+			}
+		}
+		return Math.ceil(weighted_avg);
+
+	}
+
+	var mapEconCitScoreToCreditScoreScale = function(score){
+        var EconCitRange = [0,6]
+		var CSRange = [300, 550]
+        if(score < 7){
+            EconCitRange = [0,6]
+            CSRange = [300, 549]
+        }else if(score< 13){
+            EconCitRange = [7,12]
+            CSRange = [550, 619]
+            
+        }else if(score < 19){
+            EconCitRange = [13,18]
+            CSRange = [620, 679]
+        }else if(score < 25){
+            EconCitRange = [19,24]
+            CSRange = [680, 739]
+        }else{
+            EconCitRange = [25,30]
+            CSRange = [740, 850]   
+        }
+		var multiplier = (CSRange[1] - CSRange[0])/(EconCitRange[1] - EconCitRange[0])
+		//subtract the min in the econCitRange, then add that times the multiplier to the min of the CS range
+		var value =  CSRange[0] + multiplier * (score - EconCitRange[0])
+		return value;
+	}
+    
+
+	exports.ScoringFunction = function(user_data, categories){ //passing catsToExport back into this function. That's weird, need to figure out how to use this properly.
+		var catsFromUser = Object.keys(user_data); //user only has cat stored if they saved a val for it
+		var score = 0; //for now we will just add, then I'll include the mapping to credit score vals
+		var score_info = {}
+		categories.forEach(function(element, index, list){
+			var cat_name = element["name"];
+			if(cat_name in user_data){
+				var subscoreFun = element["calculationFunction"];
+				var subscore = subscoreFun(user_data[cat_name])
+				console.log(cat_name + " subscore: " + subscore);
+				score += subscore;
+				score_info[cat_name] = subscore;
+			}
+		});
+		var raw_score = score;
+		score_info["raw_score"] = score;
+		
+		var mapped_score = mapEconCitScoreToCreditScoreScale(score);
+		score_info["mapped_score"] = mapped_score;
+		//var score_info = {"raw_score" : score, "mapped_score" : mapped_score};
+		var res_string = JSON.stringify(score_info);
+		return res_string;
+	};
+
+	
 })(typeof exports === 'undefined' ? this['categoriesModule']={} : exports);//end closure
