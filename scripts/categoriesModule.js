@@ -132,7 +132,7 @@
 			inputs: {
 				"hours_volunteered": 1,
 				"donations_in_dollars" : 1,
-				"net_income": 1,
+				"gross_income": 1,
 				"county": "unknown"
 			},
 			calculationFunction:function(inputs){
@@ -140,7 +140,7 @@
 				var county_average= .04 //hardcoded
 				var donations = parseInt(inputs["donations_in_dollars"]);
 				var hours = parseInt(inputs["hours_volunteered"]);
-				var income = parseInt(inputs["net_income"]) + 0.0;
+				var income = parseInt(inputs["gross_income"]) + 0.0;
 				if(income > 0){
 					var raw_score = (donations + 22.5 * hours)/income
 					console.log("phil raw score:" + raw_score)

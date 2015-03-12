@@ -90,7 +90,9 @@
             volunteer_hours: 0 
         },
         url : function() {
-            return this.id ? url_base + 'users/' + this.id : url_base + 'users';
+            var id = this.get("_id") 
+            console.log("user id is: " + id)
+            return id ? url_base + 'users/' + id : url_base + 'users';
         } 
     });
 
@@ -136,23 +138,27 @@
                     var score_info_template = _.template('<p>Your <%= score_type%> is: <%= score_value%> <\p> ')
                     var score_type_map = {
                         "raw_score" : "raw Economic Citizenship score",
-                        "mapped_score" : "score scaled to Credit Scoring",
+                        "mapped_score" : "ECONOMIC CITIZENSHIP SCORE",
                         "credit" : "credit subscore",
                         "bank": "banking subscore",
                         "philanthropy" : "community engagement subscore",
                         "savings" : "savings subscore",
                         "groceries" : "groceries subscore",
-                        "eating_out" : "subscore for eating_out"
+                        "eating_out" : "subscore for eating out"
                     };
                     var score_keys = Object.keys(score_info);
                     var info_string = "";
                     _.each(score_keys, function(score_key, index, list){
-                        info_string += score_info_template({"score_type": score_type_map[score_key], "score_value": score_info[score_key]});
+                        if(score_key != "raw_score"){
+                            info_string += score_info_template({"score_type": score_type_map[score_key], "score_value": score_info[score_key]});
+                        }else{
+                            info_string += "<p>=====================================</p>";
+                        }
                     });
                    // info_string = score_info_template({"score_type" : "raw Economic Citizenship score", "score_value" :score_info["raw_score"] });
                     //info_string += score_info_template({"score_type" : "score scaled to Credit Scoring", "score_value" : score_info["mapped_score"]  });
                     //info_string += score_info_template({"score_type" : "banking subscore", "score_value" : score_info["bank"]});
-                    $("#score_container h4").html(info_string)
+                    $("#score_container").html(info_string)
                     console.log(response)
 
                 }
@@ -161,46 +167,11 @@
         },
         saveIdentityInfo: function(e){
             e.preventDefault();
-            console.log("saving id info:")
+            console.log("saving id info: " + this.model.id);
             var idInfoToSave = {"name": $('#input-name').val(), "county": $('#input-county').val()};
             console.log(JSON.stringify(idInfoToSave));
             this.model.set({"name": $('#input-name').val(), "county": $('#input-county').val()})
-            this.model.save({
-                success: function(model,response){
-                    console.log("saved giving info for user " + this.model.get("name"));
-                }
-            });
-                
-        },
-        saveTransaction: function(e){
-          e.preventDefault();
-          old_transactions = this.model.get("transactions")
-          new_transaction = {
-            "vendor": $("#input-transaction-vendor").val(),
-            "amount": $("#input-transaction-amount").val()
-          };
-          old_transactions.push(new_transaction);
-          this.model.set({"transactions" : old_transactions});
-          this.model.save({
-            success: function(model,response){
-              console.log("saved transaction for user " + this.model.get("name"));
-            }
-          });
 
-        },
-        saveBankingInfo: function(e){
-            e.preventDefault();
-            this.model.set({"bank": $('#input-bank').val(), "credit_score": $('#input-credit-score').val()})
-            this.model.save({
-                success: function(model,response){
-                    console.log("saved giving info for user " + this.model.get("name"));
-                }
-            });
-                
-        },
-        saveGivingInfo: function(e){
-            e.preventDefault();
-            this.model.set({"donations": $('#input-donations').val(), "volunteer_hours": $('#input-volunteer').val()})
             this.model.save({
                 success: function(model,response){
                     console.log("saved giving info for user " + this.model.get("name"));

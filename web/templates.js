@@ -18,6 +18,9 @@ var template_test = {
                             <div id="<%= tab_title%>_inputs_container"></div>\
                             <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= display_name%> Information</button>\
                           </form>\
+                          <div id="<%= tab_title%>_score_container">\
+                              <h4></h4>\
+                        </div>\
                         <div>\
                       </div>\
                     </div>',
@@ -40,9 +43,9 @@ var template_test = {
              </form>\
             </div>\
             <div id="score_container">\
-              <h4> Your score is currently <%=template_score%>.</h4>\
-              <button class="btn btn-default" id="score_button">Update Score</button>\
+              <h4> Your score is currently unknown.</h4>\
             </div>\
+            <button class="btn btn-default" id="score_button">Update Score</button>\
           </div>\
         </div>',
 	"user_info" : '<div role="tabpanel"> \

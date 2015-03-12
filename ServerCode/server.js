@@ -39,7 +39,7 @@ app.post('/users', user.addUser);
 });*/
 app.post('/saveData/:id', user.saveData);
 app.post('/getScore/:id', user.getScore);
-app.put('/users/:id', user.updateUser);
+app.post('/users/:id', user.updateUser);
 app.delete('/users/:id',user.deleteUser);
 
 //troubleshooting
