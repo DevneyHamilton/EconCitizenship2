@@ -18,6 +18,7 @@ var template_test = {
                             <div id="<%= tab_title%>_inputs_container"></div>\
                             <button class="btn btn-default" id="<%= tab_title%>_save_button">Save <%= display_name%> Information</button>\
                           </form>\
+                          <div id="<%= tab_title%>_error_container"></div>\
                           <div id="<%= tab_title%>_score_container">\
                               <h4></h4>\
                         </div>\

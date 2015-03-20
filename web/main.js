@@ -51,30 +51,42 @@
         //handle one input - then put this into foreach over inputs, put each one into cat_info
         var input_keys = Object.keys(cat_inputs)
         _.each(input_keys, function(input_key, index, list){
-
-
             var input_selector = '#' + input_key + "_input"; //has to match input id in template
             var input_value = $(input_selector).val()
             cat_info[input_key] = input_value; //needs some validation 
             console.log([input_key, input_selector, input_value])
         });
-        console.log("user id:" + user_model.get("_id") + " saving " + cat_name + " " + JSON.stringify(cat_info));
-        console.log("event happened! target: " + e.target.id + " for user " + user_model.get("name"));
-        save_data_url_base =  url_base + "saveData/";
-        save_data_url = save_data_url_base + user_model.get("_id");
-        var data_to_send = {};
-        data_to_send[cat_name] = cat_info;
-        console.log(save_data_url)
-        $.ajax(save_data_url, {
-            type: "POST",
-            dataType: "json",
-            data: data_to_send,
-            success: function(response){
-                console.log(response)
+        //try validating:
+        var validationResult = categoriesModule.validate(cat_name, cat_info);
+       // console.log("validation!: " + JSON.stringify(validationResult));
+        var isValid = validationResult["status"];
+        var error_selector = "#" + cat_name + "_error_container"
+        if(isValid){
+            $(error_selector).html(""); //clear error messages
+            console.log("user id:" + user_model.get("_id") + " saving " + cat_name + " " + JSON.stringify(cat_info));
+            console.log("event happened! target: " + e.target.id + " for user " + user_model.get("name"));
+            save_data_url_base =  url_base + "saveData/";
+            save_data_url = save_data_url_base + user_model.get("_id");
+            var data_to_send = {};
+            data_to_send[cat_name] = cat_info;
+            console.log(save_data_url)
+            $.ajax(save_data_url, {
+                type: "POST",
+                dataType: "json",
+                data: data_to_send,
+                success: function(response){
+                    console.log(response)
 
-            }
-
-        });
+                }
+            });
+        }else{ //invalid input
+            //display error messages:
+            $(error_selector).html("") //clear
+            _.each(validationResult["messages"], function(element){
+                console.log(element);
+                $(error_selector).append("<p>" + element + "</p>");
+            });
+        }
       }
 
     });
